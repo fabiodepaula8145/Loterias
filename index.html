@@ -23,6 +23,11 @@
         }
         .animate-spinning-ball { animation: spin-fast 0.25s linear infinite; }
 
+        @media print {
+            body * { visibility: hidden; }
+            #printableTicket, #printableTicket * { visibility: visible; }
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
@@ -41,7 +46,7 @@
                     <h1 class="text-base font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
                         Volante Digital <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase">Pro Sênior</span>
                     </h1>
-                    <p class="text-xs text-slate-500">Simulador de apostas com análise estatística do histórico</p>
+                    <p class="text-xs text-slate-500">Simulador de apostas, perfis estatísticos e fechamentos matemáticos</p>
                 </div>
             </div>
             <div class="flex items-center gap-2 bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-1.5 rounded-2xl text-emerald-900">
@@ -60,24 +65,26 @@
         
         <!-- Coluna Esquerda -->
         <div class="space-y-5">
-            <!-- Controles e Perfil das Dezenas -->
+            <!-- Controles, Perfis e Fechamentos -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col gap-4">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap">
                         <div class="flex flex-col">
                             <label class="text-[10px] font-bold text-slate-400 uppercase">Dezenas por Jogo</label>
                             <select id="picksSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none mt-0.5"></select>
                         </div>
                         <div class="flex flex-col">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase">Modo</label>
-                            <div class="flex bg-slate-100 p-1 rounded-xl mt-0.5">
-                                <span class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-xs">Otimizado</span>
-                            </div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Fechamento / Desdobramento</label>
+                            <select id="closureSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none mt-0.5">
+                                <option value="1">Jogo Simples (1 bilhete)</option>
+                                <option value="3">Fechamento (3 bilhetes)</option>
+                                <option value="5">Fechamento (5 bilhetes)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                         <button id="generateBtn" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer">
-                            ✨ Gerar novo jogo
+                            ✨ Gerar Jogo(s)
                         </button>
                         <button id="clearBtn" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer">
                             Limpar
@@ -95,6 +102,21 @@
                         <button class="profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition" data-profile="delayed">Atrasadas</button>
                     </div>
                 </div>
+
+                <!-- Filtros Avançados de Fechamento -->
+                <div class="border-t border-slate-100 pt-3 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="font-bold text-slate-700">Filtros Inteligentes:</span>
+                        <label class="flex items-center gap-1.5 cursor-pointer bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                            <input type="checkbox" id="filterParidade" checked class="accent-emerald-600">
+                            <span class="text-slate-600 font-medium">Evitar P/I Extremos</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                            <input type="checkbox" id="filterConsecutivos" checked class="accent-emerald-600">
+                            <span class="text-slate-600 font-medium">Máx 2 Consecutivos</span>
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <!-- Cartela / Volante Interativo -->
@@ -107,8 +129,6 @@
                     <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Volante</span>
                 </div>
                 <div id="numbersGrid" class="w-full flex flex-col items-center justify-center py-2 gap-3"></div>
-                
-                <!-- Sub-área para Trevos (+Milionária) ou Time do Coração (Timemania) -->
                 <div id="extraArea" class="w-full mt-4 pt-4 border-t border-slate-100 hidden"></div>
             </div>
 
@@ -153,7 +173,7 @@
             </div>
         </div>
 
-        <!-- Coluna Direita: Critérios Estatísticos e Histórico -->
+        <!-- Coluna Direita -->
         <aside class="space-y-4">
             <!-- Critérios Estatísticos -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
@@ -174,6 +194,22 @@
                 </div>
             </div>
 
+            <!-- Conferidor Automático -->
+            <div class="bg-emerald-900 text-white rounded-2xl shadow-sm p-5 flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 text-emerald-300">
+                        🎯 Conferidor de Sorteio
+                    </h3>
+                    <span class="bg-emerald-800 text-emerald-200 text-[10px] px-2 py-0.5 rounded font-bold">Ativo</span>
+                </div>
+                <p class="text-[11px] text-emerald-200/80">Insira os números do sorteio separados por vírgula:</p>
+                <div class="flex gap-2">
+                    <input type="text" id="checkResultInput" placeholder="Ex: 05, 12, 23, 34, 45, 58" class="bg-emerald-950 border border-emerald-700 rounded-xl px-3 py-2 text-xs text-white placeholder-emerald-600 outline-none w-full font-mono">
+                    <button id="checkResultBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs transition cursor-pointer">Conferir</button>
+                </div>
+                <div id="checkFeedback" class="text-[11px] font-medium text-emerald-300 hidden"></div>
+            </div>
+
             <!-- Importação de Planilha -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
                 <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2">📁 Importar Histórico</h3>
@@ -182,13 +218,13 @@
                     <span class="text-xs font-semibold text-slate-600 truncate max-w-xs" id="fileNameDisplay">Selecionar arquivo...</span>
                     <input type="file" id="resultFile" accept=".csv, .xlsx, .xls" class="hidden">
                 </label>
-                <div id="statusMessage" class="mt-2 text-[11px] font-semibold text-slate-500"></div>
+                <div id="statusMessage" class="mt-2 text-[11px] font-bold text-slate-500"></div>
             </div>
 
-            <!-- Histórico & Auditoria -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col h-[460px]">
+            <!-- Histórico & Bilhetes Salvos -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col h-[380px]">
                 <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
-                    <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">🎟️ Jogos & Prêmios</h3>
+                    <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">🎟️ Jogos & Bilhetes</h3>
                     <button id="clearHistoryBtn" class="text-[11px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer">Apagar</button>
                 </div>
                 <div id="historyList" class="flex-grow overflow-y-auto space-y-2.5 pr-1 text-xs">
@@ -203,7 +239,7 @@
         Volante Digital Pro &bull; Padrão Executivo de Alta Performance
     </footer>
 
-    <!-- Lógica JavaScript Corrigida com Trevos e Timemania -->
+    <!-- Lógica JavaScript Corrigida para Sorteio Dinâmico de Trevos e Times -->
     <script>
         const timemaniaTeams = [
             "ABC/RN", "Águia de Marabá/PA", "Altos/PI", "Amazonas/FC", "América/MG", "América/RN", "América/SP", 
@@ -235,10 +271,7 @@
         let historicalDraws = [];
         let globalFrequencyMap = {};
         let pinnedNumbers = [];
-        let pinnedTrevos = [];
         let currentProfile = 'balanced';
-        let selectedTeam = '';
-        let selectedTrevos = [];
 
         let freqChartInstance = null;
         let parityChartInstance = null;
@@ -252,6 +285,9 @@
         const numbersGrid = document.getElementById('numbersGrid');
         const extraArea = document.getElementById('extraArea');
         const picksSelect = document.getElementById('picksSelect');
+        const closureSelect = document.getElementById('closureSelect');
+        const filterParidade = document.getElementById('filterParidade');
+        const filterConsecutivos = document.getElementById('filterConsecutivos');
         const generateBtn = document.getElementById('generateBtn');
         const clearBtn = document.getElementById('clearBtn');
         const historyList = document.getElementById('historyList');
@@ -262,6 +298,9 @@
         const hotDemoList = document.getElementById('hotDemoList');
         const coldDemoList = document.getElementById('coldDemoList');
         const demoSubInfo = document.getElementById('demoSubInfo');
+        const checkResultInput = document.getElementById('checkResultInput');
+        const checkResultBtn = document.getElementById('checkResultBtn');
+        const checkFeedback = document.getElementById('checkFeedback');
 
         function renderTabs() {
             lotteryTabsContainer.innerHTML = '';
@@ -276,9 +315,6 @@
                     currentLotteryId = l.id;
                     currentCfg = l;
                     pinnedNumbers = [];
-                    pinnedTrevos = [];
-                    selectedTeam = '';
-                    selectedTrevos = [];
                     renderTabs();
                     initCartela();
                 };
@@ -301,7 +337,7 @@
             }
 
             renderGrid();
-            renderExtraArea();
+            renderExtraArea([]);
             renderDemoLists();
             updateCharts();
         }
@@ -328,39 +364,28 @@
             numbersGrid.appendChild(mainDiv);
         }
 
-        function renderExtraArea() {
+        function renderExtraArea(activeTrevos = [], activeTeam = '') {
             extraArea.innerHTML = '';
             if (currentCfg.hasTeam) {
                 extraArea.classList.remove('hidden');
                 extraArea.innerHTML = `
                     <div class="flex flex-col gap-2">
-                        <span class="text-xs font-bold text-slate-700">⚽ Time do Coração (Timemania)</span>
+                        <span class="text-xs font-bold text-slate-700">⚽ Time do Coração (Timemania Sorteado)</span>
                         <div class="flex items-center justify-between bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-xl">
-                            <span id="teamDisplayLabel" class="text-xs font-extrabold text-amber-900">${selectedTeam || 'Nenhum time sorteado ainda'}</span>
-                            <span class="text-[10px] text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded font-bold uppercase">Sorteio Automático</span>
+                            <span class="text-xs font-extrabold text-amber-900">${activeTeam || 'Aguardando geração do jogo...'}</span>
+                            <span class="text-[10px] text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded font-bold uppercase">Sorteado</span>
                         </div>
                     </div>
                 `;
             } else if (currentCfg.hasTrevos) {
                 extraArea.classList.remove('hidden');
-                let trevosHTML = `<div class="flex flex-col gap-2"><span class="text-xs font-bold text-slate-750">🍀 Trevos da Sorte (+Milionária - Escolha ${currentCfg.trevosPicks})</span><div class="flex gap-2 justify-center">`;
+                let trevosHTML = `<div class="flex flex-col gap-2"><span class="text-xs font-bold text-slate-750">🍀 Trevos Sorteados (+Milionária)</span><div class="flex gap-2 justify-center">`;
                 for (let t = currentCfg.trevosMin; t <= currentCfg.trevosMax; t++) {
-                    const isSelected = selectedTrevos.includes(t);
-                    trevosHTML += `<div class="trevo-ball w-10 h-10 rounded-full border ${isSelected ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200'} flex items-center justify-center font-bold text-xs cursor-pointer transition" data-trevo="${t}">${t}</div>`;
+                    const isSelected = activeTrevos.includes(t);
+                    trevosHTML += `<div class="w-10 h-10 rounded-full border ${isSelected ? 'bg-indigo-600 text-white border-indigo-700 shadow-md animate-pop' : 'bg-slate-50 text-slate-400 border-slate-200 opacity-60'} flex items-center justify-center font-bold text-xs">${t}</div>`;
                 }
                 trevosHTML += `</div></div>`;
                 extraArea.innerHTML = trevosHTML;
-
-                document.querySelectorAll('.trevo-ball').forEach(b => {
-                    b.onclick = () => {
-                        const val = parseInt(b.dataset.trevo);
-                        if (selectedTrevos.includes(val)) selectedTrevos = selectedTrevos.filter(x => x !== val);
-                        else {
-                            if (selectedTrevos.length < currentCfg.trevosPicks) selectedTrevos.push(val);
-                        }
-                        renderExtraArea();
-                    };
-                });
             } else {
                 extraArea.classList.add('hidden');
             }
@@ -389,55 +414,100 @@
                 </div>`).join('');
         }
 
-        // GERAÇÃO DE JOGO COM ANIMAÇÃO E SORTEIO DE TIMES/TREVOS
+        function passesAdvancedFilters(nums) {
+            if (filterParidade.checked) {
+                let pares = nums.filter(n => n % 2 === 0).length;
+                let impares = nums.length - pares;
+                if (pares === 0 || impares === 0) return false;
+            }
+            if (filterConsecutivos.checked) {
+                let consecutivos = 0;
+                let maxSeq = 0;
+                for (let i = 0; i < nums.length - 1; i++) {
+                    if (nums[i+1] === nums[i] + 1) {
+                        consecutivos++;
+                        maxSeq = Math.max(maxSeq, consecutivos);
+                    } else {
+                        consecutivos = 0;
+                    }
+                }
+                if (maxSeq > 2) return false;
+            }
+            return true;
+        }
+
         function generateGame() {
             const picksCount = parseInt(picksSelect.value);
-            let pool = [];
-            for (let i = currentCfg.min; i <= currentCfg.max; i++) {
-                if (!pinnedNumbers.includes(i)) pool.push(i);
-            }
-            for (let i = pool.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [pool[i], pool[j]] = [pool[j], pool[i]];
-            }
-            let selected = [...pinnedNumbers, ...pool.slice(0, picksCount - pinnedNumbers.length)].sort((a, b) => a - b);
-
-            // Sorteio Timemania Team
-            if (currentCfg.hasTeam) {
-                const randomIndex = Math.floor(Math.random() * timemaniaTeams.length);
-                selectedTeam = timemaniaTeams[randomIndex];
-            }
-
-            // Sorteio Trevos +Milionária
-            if (currentCfg.hasTrevos && selectedTrevos.length < currentCfg.trevosPicks) {
-                let trevPool = [];
-                for (let t = currentCfg.trevosMin; t <= currentCfg.trevosMax; t++) {
-                    if (!selectedTrevos.includes(t)) trevPool.push(t);
-                }
-                trevPool.sort(() => Math.random() - 0.5);
-                selectedTrevos = [...selectedTrevos, ...trevPool.slice(0, currentCfg.trevosPicks - selectedTrevos.length)].sort((a,b)=>a-b);
-            }
-
+            const closureCount = parseInt(closureSelect.value);
+            
             const allBalls = document.querySelectorAll('.number-ball');
             allBalls.forEach(ball => {
                 ball.className = `number-ball w-10 h-10 rounded-full border-2 border-emerald-400 bg-emerald-50 flex items-center justify-center font-bold text-xs text-emerald-800 animate-spinning-ball`;
             });
 
             setTimeout(() => {
+                let generatedGames = [];
+                let attempts = 0;
+
+                while (generatedGames.length < closureCount && attempts < 100) {
+                    attempts++;
+                    let pool = [];
+                    for (let i = currentCfg.min; i <= currentCfg.max; i++) {
+                        if (!pinnedNumbers.includes(i)) pool.push(i);
+                    }
+                    pool.sort(() => Math.random() - 0.5);
+                    let selected = [...pinnedNumbers, ...pool.slice(0, picksCount - pinnedNumbers.length)].sort((a, b) => a - b);
+
+                    if (passesAdvancedFilters(selected)) {
+                        if (!generatedGames.some(g => JSON.stringify(g) === JSON.stringify(selected))) {
+                            generatedGames.push(selected);
+                        }
+                    }
+                }
+
+                if (generatedGames.length === 0) {
+                    let pool = [];
+                    for (let i = currentCfg.min; i <= currentCfg.max; i++) { if (!pinnedNumbers.includes(i)) pool.push(i); }
+                    pool.sort(() => Math.random() - 0.5);
+                    generatedGames.push([...pinnedNumbers, ...pool.slice(0, picksCount - pinnedNumbers.length)].sort((a, b) => a - b));
+                }
+
+                // Sorteia novo time a cada geração para Timemania
+                let drawnTeam = '';
+                if (currentCfg.hasTeam) {
+                    drawnTeam = timemaniaTeams[Math.floor(Math.random() * timemaniaTeams.length)];
+                }
+
+                // Sorteia novos trevos dinamicamente a cada geração para +Milionária
+                let drawnTrevos = [];
+                if (currentCfg.hasTrevos) {
+                    let trevPool = [];
+                    for (let t = currentCfg.trevosMin; t <= currentCfg.trevosMax; t++) {
+                        trevPool.push(t);
+                    }
+                    trevPool.sort(() => Math.random() - 0.5);
+                    drawnTrevos = trevPool.slice(0, currentCfg.trevosPicks).sort((a, b) => a - b);
+                }
+
                 renderGrid();
-                renderExtraArea();
+                renderExtraArea(drawnTrevos, drawnTeam);
+                
                 const themeClasses = currentCfg.theme.split(' ');
                 const updatedBalls = document.querySelectorAll('.number-ball');
-                
+                const lastSelected = generatedGames[generatedGames.length - 1];
+
                 updatedBalls.forEach(ball => {
                     const val = parseInt(ball.dataset.value);
-                    if (selected.includes(val)) {
+                    if (lastSelected.includes(val)) {
                         ball.className = `number-ball w-10 h-10 rounded-full ${themeClasses[0]} ${themeClasses[1]} flex items-center justify-center font-extrabold text-xs animate-pop shadow-sm`;
                     }
                 });
 
-                let auditResult = auditGameFrequency(selected);
-                saveToHistory(currentCfg.name, currentCfg.id, selected, auditResult, selectedTeam, selectedTrevos);
+                generatedGames.forEach(gameNums => {
+                    let auditResult = auditGameFrequency(gameNums);
+                    saveToHistory(currentCfg.name, currentCfg.id, gameNums, auditResult, drawnTeam, drawnTrevos);
+                });
+
                 updateCharts();
             }, 450);
         }
@@ -471,7 +541,7 @@
 
         function saveToHistory(lotteryName, lotteryKey, numbers, audit, team, trevos) {
             const newItem = {
-                id: Date.now(),
+                id: Date.now() + Math.random(),
                 lottery: lotteryName,
                 lotteryKey: lotteryKey,
                 numbers: numbers,
@@ -518,10 +588,14 @@
                 div.innerHTML = `
                     <div class="flex justify-between items-center text-slate-400 text-[10px]">
                         <span class="font-bold text-slate-800">${item.lottery}</span>
-                        <span>${item.date}</span>
+                        <div class="flex items-center gap-2">
+                            <span>${item.date}</span>
+                            <button onclick="printTicket('${item.id}')" class="text-emerald-600 hover:text-emerald-800 font-bold cursor-pointer" title="Imprimir / Salvar PDF">🖨️</button>
+                        </div>
                     </div>
-                    <div class="font-mono font-bold text-slate-900 text-xs bg-white p-2 rounded-lg border border-slate-100">
-                        ${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(', ')}
+                    <div class="font-mono font-bold text-slate-900 text-xs bg-white p-2 rounded-lg border border-slate-100 flex justify-between items-center">
+                        <span>${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(', ')}</span>
+                        ${item.liveHits !== undefined ? `<span class="bg-emerald-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold shadow-xs">${item.liveHits} Acertos</span>` : ''}
                     </div>
                     ${extraInfoHTML}
                     <div>${auditHTML}</div>
@@ -529,6 +603,62 @@
                 historyList.appendChild(div);
             });
         }
+
+        window.printTicket = function(id) {
+            const item = historyData.find(i => String(i.id) === String(id));
+            if (!item) return;
+            const w = window.open('', '_print', 'width=400,height=600');
+            w.document.write(`
+                <html>
+                <head><title>Volante - ${item.lottery}</title>
+                <style>body { font-family: monospace; padding: 20px; text-align: center; }</style>
+                </head>
+                <body>
+                    <h2>VOLANTE DIGITAL PRO</h2>
+                    <h3>${item.lottery}</h3>
+                    <p>Data: ${item.date}</p>
+                    <hr/>
+                    <h2 style="letter-spacing: 2px;">${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(' - ')}</h2>
+                    ${item.team ? `<p><strong>Time:</strong> ${item.team}</p>` : ''}
+                    ${item.trevos ? `<p><strong>Trevos:</strong> ${item.trevos.join(' - ')}</p>` : ''}
+                    <hr/>
+                    <p style="font-size: 10px; color: #666;">Conferência de Apostas - Uso Pessoal</p>
+                </body>
+                </html>
+            `);
+            w.document.close();
+            w.focus();
+            setTimeout(() => { w.print(); w.close(); }, 300);
+        };
+
+        checkResultBtn.onclick = () => {
+            const raw = checkResultInput.value.trim();
+            if (!raw) {
+                checkFeedback.innerText = "Digite os números sorteados.";
+                checkFeedback.classList.remove('hidden');
+                return;
+            }
+            const drawn = raw.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            if (drawn.length === 0) {
+                checkFeedback.innerText = "Formato inválido. Use números separados por vírgula.";
+                checkFeedback.classList.remove('hidden');
+                return;
+            }
+
+            let matchesCount = 0;
+            historyData.forEach(item => {
+                let hits = 0;
+                item.numbers.forEach(n => {
+                    if (drawn.includes(n)) hits++;
+                });
+                item.liveHits = hits;
+                if (hits > 0) matchesCount++;
+            });
+
+            renderHistory();
+            checkFeedback.innerText = `Conferência realizada! ${matchesCount} bilhete(s) pontuaram com os números informados.`;
+            checkFeedback.classList.remove('hidden');
+        };
 
         function updateCharts() {
             const freqCtx = document.getElementById('freqChart').getContext('2d');
@@ -617,7 +747,7 @@
         });
 
         generateBtn.onclick = generateGame;
-        clearBtn.onclick = () => { pinnedNumbers = []; pinnedTrevos = []; selectedTeam = ''; selectedTrevos = []; initCartela(); };
+        clearBtn.onclick = () => { pinnedNumbers = []; initCartela(); };
         clearHistoryBtn.onclick = () => { historyData = []; localStorage.removeItem('volante_history'); renderHistory(); };
 
         renderTabs();
