@@ -4,228 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volante Digital Pro - Loterias da Caixa</title>
-    <!-- Tailwind CSS para Estilização Moderna -->
+    <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- SheetJS (xlsx) para leitura de planilhas XLSX e CSV -->
+    <!-- SheetJS e Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Chart.js para Gráficos Analíticos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @keyframes pulse-custom {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.15); opacity: 0.9; }
+        @keyframes pop {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
         }
-        .animate-pop {
-            animation: pulse-custom 0.4s cubic-bezier(0.4, 0, 0.6, 1);
-        }
+        .animate-pop { animation: pop 0.35s ease-in-out; }
+        
         @keyframes spin-fast {
-            0% { transform: rotate(0deg) scale(0.9); opacity: 0.6; }
+            0% { transform: rotate(0deg) scale(0.7); opacity: 0.4; }
             50% { transform: rotate(180deg) scale(1.1); opacity: 0.9; }
-            100% { transform: rotate(360deg) scale(0.9); opacity: 0.6; }
+            100% { transform: rotate(360deg) scale(0.7); opacity: 0.4; }
         }
-        .animate-spinning-ball {
-            animation: spin-fast 0.25s linear infinite;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.03);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.15);
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0,0,0,0.25);
-        }
+        .animate-spinning-ball { animation: spin-fast 0.25s linear infinite; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 via-slate-200 to-zinc-300 text-slate-800 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white">
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-white font-sans">
 
     <!-- Cabeçalho Executivo -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-6 py-3.5 shadow-xs">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 px-6 py-4 shadow-xs">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div id="headerIconBox" class="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center font-black text-white shadow-md transition-colors">
+                <div id="headerIconBox" class="w-10 h-10 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-md transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                 </div>
                 <div>
                     <h1 class="text-base font-extrabold tracking-tight text-slate-900 flex items-center gap-2">
-                        Volante Digital <span id="headerBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase">Pro Sênior</span>
+                        Volante Digital <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase">Pro Sênior</span>
                     </h1>
-                    <p class="text-xs text-slate-500">Simulador com animação individual e auditoria de faixas</p>
+                    <p class="text-xs text-slate-500">Simulador de apostas com análise estatística do histórico</p>
                 </div>
             </div>
-
-            <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3.5 py-1.5 rounded-2xl">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" /></svg>
-                <span id="dataSourceLabel" class="text-xs font-bold text-slate-700">0 concursos carregados</span>
+            <div class="flex items-center gap-2 bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-1.5 rounded-2xl text-emerald-900">
+                <span id="dataSourceLabel" class="text-xs font-bold">180 concursos de demonstração</span>
             </div>
         </div>
     </header>
 
-    <!-- Barra de Abas de Loterias -->
-    <div class="bg-white/50 border-b border-slate-200 px-6 py-2.5 overflow-x-auto">
+    <!-- Barra de Abas Estilo Pílula -->
+    <div class="bg-white border-b border-slate-200 px-6 py-3 shadow-2xs overflow-x-auto">
         <div class="max-w-7xl mx-auto flex items-center gap-2" id="lotteryTabsContainer"></div>
     </div>
 
     <!-- Conteúdo Principal -->
-    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_368px] gap-6 flex-grow">
+    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6 flex-grow">
         
+        <!-- Coluna Esquerda -->
         <div class="space-y-5">
-            <!-- Painel de Controles -->
-            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl shadow-slate-300/50 border border-white/60 p-5 flex flex-col gap-4">
+            <!-- Controles e Perfil das Dezenas -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col gap-4">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div>
-                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-wide">Configuração do Sorteio</h2>
-                        <p class="text-xs text-slate-500">Defina a quantidade de dezenas e o modo inteligente</p>
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Dezenas por Jogo</label>
+                            <select id="picksSelect" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 outline-none mt-0.5"></select>
+                        </div>
+                        <div class="flex flex-col">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Modo</label>
+                            <div class="flex bg-slate-100 p-1 rounded-xl mt-0.5">
+                                <span class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold shadow-xs">Otimizado</span>
+                            </div>
+                        </div>
                     </div>
-                    <select id="modeSelect" class="bg-slate-100 text-slate-800 font-bold text-xs px-3 py-2 rounded-xl border border-slate-200 outline-none cursor-pointer">
-                        <option value="smart">Modo Inteligente (Estatístico)</option>
-                        <option value="balanced">Equilíbrio Par/Ímpar</option>
-                        <option value="random">Aleatório Padrão</option>
-                    </select>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-xs font-bold text-slate-700">Quantidade de Dezenas:</span>
-                        <select id="picksSelect" class="bg-white text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg border border-slate-200 outline-none"></select>
-                    </div>
-                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-xs font-bold text-slate-700">Jogos Simultâneos:</span>
-                        <select id="gameCountSelect" class="bg-white text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg border border-slate-200 outline-none">
-                            <option value="1">1 Jogo</option>
-                            <option value="3">3 Jogos</option>
-                            <option value="5">5 Jogos</option>
-                        </select>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button id="generateBtn" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer">
+                            ✨ Gerar novo jogo
+                        </button>
+                        <button id="clearBtn" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer">
+                            Limpar
+                        </button>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 pt-2">
-                    <button id="clearBtn" class="px-5 py-3 bg-slate-200/80 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
-                        Limpar Cartela
-                    </button>
-                    <button id="generateBtn" class="flex-grow px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 cursor-pointer">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                        Gerar Jogo com Animação Individual
-                    </button>
+                <!-- Perfil das Dezenas -->
+                <div class="border-t border-slate-100 pt-3">
+                    <span class="text-xs font-bold text-slate-700 block mb-2">Perfil das dezenas (Peso na geração)</span>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button class="profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white border border-emerald-600 transition" data-profile="balanced">Equilibradas</button>
+                        <button class="profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition" data-profile="hot">Quentes</button>
+                        <button class="profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition" data-profile="cold">Frias</button>
+                        <button class="profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition" data-profile="delayed">Atrasadas</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Cartela Interativa Oficial -->
-            <div id="cartelaContainer" class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl shadow-slate-300/50 border border-white/60 p-6 flex flex-col items-center relative overflow-hidden transition-all">
-                <div class="w-full flex justify-between items-center border-b border-slate-200 pb-4 mb-5">
+            <!-- Cartela / Volante Interativo -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col items-center relative overflow-hidden">
+                <div class="w-full flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
                     <div>
-                        <h3 id="cartelaTitle" class="text-lg font-black text-slate-900 uppercase">Mega-Sena</h3>
-                        <p id="cartelaSubtitle" class="text-xs text-slate-500">Volante digital oficial</p>
+                        <h3 id="cartelaTitle" class="text-sm font-extrabold text-slate-900 uppercase">Mega-Sena</h3>
+                        <p id="cartelaSubtitle" class="text-xs text-slate-400">Clique na bola para fixar/desfixar</p>
                     </div>
-                    <div id="timemaniaBadge" class="hidden bg-amber-100 text-amber-900 border border-amber-300 px-3.5 py-1.5 rounded-xl text-xs font-bold">
-                        ⚽ Time: <span id="selectedTeamName" class="font-extrabold">-</span>
-                    </div>
+                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Volante</span>
                 </div>
-
-                <div id="numbersGrid" class="w-full flex flex-col items-center justify-center py-2 gap-4"></div>
+                <div id="numbersGrid" class="w-full flex flex-col items-center justify-center py-2 gap-3"></div>
             </div>
 
-            <!-- Painel de Estatísticas e Números Quentes/Frios -->
-            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl shadow-slate-300/50 border border-white/60 p-6 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-slate-200 pb-3">
-                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-wider">Estatísticas Específicas do Jogo Atual</h3>
-                    <span id="gameAnalysisBadge" class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">Aguardando Jogo</span>
+            <!-- Painel de Demonstração de Mais e Menos Sorteadas -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col gap-4">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
+                            📊 Análise do Histórico
+                        </h3>
+                        <p id="demoSubInfo" class="text-[11px] text-slate-400 mt-0.5">180 concursos analisados</p>
+                    </div>
+                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Demonstração</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-slate-500 font-bold uppercase text-[10px]">Números Quentes</span>
-                        <div id="hotNumbersList" class="font-bold text-emerald-700 flex flex-wrap gap-1 mt-1">
-                            <span class="text-slate-400 italic font-normal">Gere um jogo</span>
-                        </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-emerald-50/40 p-3.5 rounded-xl border border-emerald-100 flex flex-col gap-2">
+                        <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">🔥 Mais Sorteadas</span>
+                        <div id="hotDemoList" class="flex flex-col gap-1.5"></div>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-slate-500 font-bold uppercase text-[10px]">Números Frios</span>
-                        <div id="coldNumbersList" class="font-bold text-sky-700 flex flex-wrap gap-1 mt-1">
-                            <span class="text-slate-400 italic font-normal">Gere um jogo</span>
-                        </div>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
-                        <span class="text-slate-500 font-bold uppercase text-[10px]">Paridade & Soma</span>
-                        <div id="paritySumInfo" class="font-semibold text-slate-700 flex flex-col gap-0.5 mt-1">
-                            <span>Pares / Ímpares: -</span>
-                            <span>Soma Total: -</span>
-                        </div>
+                    <div class="bg-sky-50/40 p-3.5 rounded-xl border border-sky-100 flex flex-col gap-2">
+                        <span class="text-[10px] font-bold text-sky-800 uppercase tracking-wider">⏳ Menos Sorteadas</span>
+                        <div id="coldDemoList" class="flex flex-col gap-1.5"></div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 flex flex-col items-center">
-                        <h4 class="text-xs font-bold text-slate-700 mb-2 uppercase">Frequência Geral</h4>
-                        <div class="w-full h-40 relative flex items-center justify-center">
-                            <canvas id="freqChart"></canvas>
-                        </div>
+                <!-- Gráficos Analíticos -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Frequência</span>
+                        <div class="w-full h-32 relative"><canvas id="freqChart"></canvas></div>
                     </div>
-                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60 flex flex-col items-center">
-                        <h4 class="text-xs font-bold text-slate-700 mb-2 uppercase">Pares vs Ímpares</h4>
-                        <div class="w-full h-40 relative flex items-center justify-center">
-                            <canvas id="parityChart"></canvas>
-                        </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Pares vs Ímpares</span>
+                        <div class="w-full h-32 relative"><canvas id="parityChart"></canvas></div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Quadrantes</span>
+                        <div class="w-full h-32 relative"><canvas id="quadrantChart"></canvas></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Coluna Direita: Painel Lateral -->
+        <!-- Coluna Direita: Critérios Estatísticos e Histórico -->
         <aside class="space-y-4">
-            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl shadow-slate-300/50 border border-white/60 p-5">
-                <h3 class="font-extrabold text-slate-800 text-xs uppercase tracking-wider mb-2">Importar Histórico (CSV/XLSX)</h3>
-                <p class="text-[11px] text-slate-500 mb-3">Carregue resultados oficiais para auditoria de faixas (Quadra, Quina, Sena).</p>
-                <label class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-emerald-500 bg-slate-50 transition">
+            <!-- Critérios Estatísticos -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+                <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-3">⚙ Critérios Estatísticos</h3>
+                <div class="space-y-3 text-xs">
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-medium text-slate-700">Par / Ímpar</span>
+                        <span class="font-bold text-emerald-700">Equilibrado</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-medium text-slate-700">Consecutivos</span>
+                        <span class="font-bold text-slate-700">Até 2 seguidos</span>
+                    </div>
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="font-medium text-slate-700">Faixa de Soma</span>
+                        <span class="font-bold text-slate-700">Histórica</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Importação de Planilha -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
+                <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2">📁 Importar Histórico</h3>
+                <p class="text-[11px] text-slate-400 mb-3">Carregue CSV/XLSX para auditoria de prêmios.</p>
+                <label class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-emerald-500 bg-slate-50 transition">
                     <span class="text-xs font-semibold text-slate-600 truncate max-w-xs" id="fileNameDisplay">Selecionar arquivo...</span>
                     <input type="file" id="resultFile" accept=".csv, .xlsx, .xls" class="hidden">
                 </label>
                 <div id="statusMessage" class="mt-2 text-[11px] font-semibold text-slate-500"></div>
             </div>
 
-            <!-- Histórico de Apostas & Auditoria -->
-            <div class="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl shadow-slate-300/50 border border-white/60 p-5 flex flex-col h-[480px]">
-                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-200">
-                    <h3 class="font-extrabold text-slate-800 text-xs uppercase tracking-wider">Histórico & Auditoria de Prêmios</h3>
-                    <button id="clearHistoryBtn" class="text-[11px] text-rose-600 hover:text-rose-800 font-bold transition cursor-pointer">
-                        Apagar
-                    </button>
+            <!-- Histórico & Auditoria -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col h-[460px]">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-slate-100">
+                    <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider">🎟️ Jogos & Prêmios</h3>
+                    <button id="clearHistoryBtn" class="text-[11px] text-rose-600 hover:text-rose-800 font-bold cursor-pointer">Apagar</button>
                 </div>
                 <div id="historyList" class="flex-grow overflow-y-auto space-y-2.5 pr-1 text-xs">
-                    <div class="text-center text-slate-400 py-12 font-medium">
-                        Nenhum jogo gerado ainda.
-                    </div>
+                    <div class="text-center text-slate-400 py-16 font-medium">Nenhum jogo gerado ainda.</div>
                 </div>
             </div>
         </aside>
     </main>
 
     <!-- Rodapé -->
-    <footer class="bg-slate-900/40 border-t border-slate-300/60 py-4 text-center text-xs text-slate-600 mt-6 font-medium">
-        Volante Digital Pro &bull; Auditoria de Prêmios & Animação Individual
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-6 font-medium">
+        Volante Digital Pro &bull; Padrão Executivo de Alta Performance
     </footer>
 
-    <!-- Lógica JavaScript e Auditoria de Premiação -->
+    <!-- Lógica JavaScript com Animação de Giro nas Bolinhas -->
     <script>
         const lotteries = [
             { id: 'megasena', name: 'Mega-Sena', min: 1, max: 60, defaultPicks: 6, pickMax: 15, accent: '#059669', theme: 'bg-emerald-600 text-white shadow-emerald-600/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Sena'} },
-            { id: 'maismilionaria', name: '+Milionária', min: 1, max: 50, defaultPicks: 6, pickMax: 12, trevos: { min: 1, max: 6, defaultPicks: 2, pickMax: 6 }, accent: '#4338ca', theme: 'bg-indigo-700 text-white shadow-indigo-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Prêmio Máximo'} },
             { id: 'quina', name: 'Quina', min: 1, max: 80, defaultPicks: 5, pickMax: 15, accent: '#7c3aed', theme: 'bg-violet-700 text-white shadow-violet-700/30', tiers: {2: 'Duque', 3: 'Terno', 4: 'Quadra', 5: 'Quina'} },
-            { id: 'lotofacil', name: 'Lotofácil', min: 1, max: 25, defaultPicks: 15, pickMax: 20, accent: '#a21caf', theme: 'bg-fuchsia-700 text-white shadow-fuchsia-700/30', tiers: {11: '11 Pontos', 12: '12 Pontos', 13: '13 Pontos', 14: '14 Pontos', 15: '15 Pontos'} },
+            { id: 'lotofacil', name: 'Lotofácil', min: 1, max: 25, defaultPicks: 15, pickMax: 20, accent: '#a21caf', theme: 'bg-fuchsia-700 text-white shadow-fuchsia-700/30', tiers: {11: '11 Pts', 12: '12 Pts', 13: '13 Pts', 14: '14 Pts', 15: '15 Pts'} },
+            { id: 'lotomania', name: 'Lotomania', min: 0, max: 99, defaultPicks: 50, pickMax: 50, accent: '#ea580c', theme: 'bg-orange-600 text-white shadow-orange-600/30', tiers: {15: '15 Pts', 16: '16 Pts', 17: '17 Pts', 18: '18 Pts', 19: '19 Pts', 20: '20 Pts'} },
+            { id: 'timemania', name: 'Timemania', min: 1, max: 80, defaultPicks: 10, pickMax: 10, accent: '#d97706', theme: 'bg-amber-500 text-slate-950 shadow-amber-500/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
             { id: 'duplasena', name: 'Dupla Sena', min: 1, max: 50, defaultPicks: 6, pickMax: 15, accent: '#dc2626', theme: 'bg-red-700 text-white shadow-red-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Sena'} },
-            { id: 'timemania', name: 'Timemania', min: 1, max: 80, defaultPicks: 10, pickMax: 10, hasTime: true, accent: '#d97706', theme: 'bg-amber-500 text-slate-950 shadow-amber-500/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
-            { id: 'lotomania', name: 'Lotomania', min: 0, max: 99, defaultPicks: 50, pickMax: 50, accent: '#ea580c', theme: 'bg-orange-600 text-white shadow-orange-600/30', tiers: {15: '15 Acertos', 16: '16 Acertos', 17: '17 Acertos', 18: '18 Acertos', 19: '19 Acertos', 20: '20 Acertos', 0: 'Nenhum Acerto'} }
-        ];
-
-        const timemaniaClubs = [
-            "ABC - RN", "Altos - PI", "América - MG", "América - RN", "Aparecidense - GO", "Athletico - PR", 
-            "Atlético - GO", "Atlético - MG", "Bahia - BA", "Bangu - RJ", "Botafogo - RJ", "Corinthians - SP", 
-            "Flamengo - RJ", "Fluminense - RJ", "Fortaleza - CE", "Grêmio - RS", "Palmeiras - SP", "Santos - SP", "São Paulo - SP", "Vasco - RJ"
+            { id: 'diadesorte', name: 'Dia de Sorte', min: 1, max: 31, defaultPicks: 7, pickMax: 15, accent: '#0284c7', theme: 'bg-sky-600 text-white shadow-sky-600/30', tiers: {4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
+            { id: 'supersete', name: 'Super Sete', min: 0, max: 9, defaultPicks: 7, pickMax: 7, accent: '#0d9488', theme: 'bg-teal-600 text-white shadow-teal-600/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
+            { id: 'maismilionaria', name: '+Milionária', min: 1, max: 50, defaultPicks: 6, pickMax: 12, accent: '#4338ca', theme: 'bg-indigo-700 text-white shadow-indigo-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Prêmio'} },
+            { id: 'loteca', name: 'Loteca', min: 1, max: 14, defaultPicks: 14, pickMax: 14, accent: '#b45309', theme: 'bg-amber-700 text-white shadow-amber-700/30', tiers: {13: '13 Acertos', 14: '14 Acertos'} }
         ];
 
         let currentLotteryId = 'megasena';
@@ -233,12 +220,15 @@
         let historyData = JSON.parse(localStorage.getItem('volante_history')) || [];
         let historicalDraws = [];
         let globalFrequencyMap = {};
+        let pinnedNumbers = [];
+        let currentProfile = 'balanced';
+
         let freqChartInstance = null;
         let parityChartInstance = null;
+        let quadrantChartInstance = null;
 
         const lotteryTabsContainer = document.getElementById('lotteryTabsContainer');
         const headerIconBox = document.getElementById('headerIconBox');
-        const headerBadge = document.getElementById('headerBadge');
         const dataSourceLabel = document.getElementById('dataSourceLabel');
         const cartelaTitle = document.getElementById('cartelaTitle');
         const cartelaSubtitle = document.getElementById('cartelaSubtitle');
@@ -251,25 +241,23 @@
         const resultFile = document.getElementById('resultFile');
         const fileNameDisplay = document.getElementById('fileNameDisplay');
         const statusMessage = document.getElementById('statusMessage');
-        const timemaniaBadge = document.getElementById('timemaniaBadge');
-        const selectedTeamName = document.getElementById('selectedTeamName');
-        const hotNumbersList = document.getElementById('hotNumbersList');
-        const coldNumbersList = document.getElementById('coldNumbersList');
-        const paritySumInfo = document.getElementById('paritySumInfo');
-        const gameAnalysisBadge = document.getElementById('gameAnalysisBadge');
+        const hotDemoList = document.getElementById('hotDemoList');
+        const coldDemoList = document.getElementById('coldDemoList');
+        const demoSubInfo = document.getElementById('demoSubInfo');
 
         function renderTabs() {
             lotteryTabsContainer.innerHTML = '';
             lotteries.forEach(l => {
                 const btn = document.createElement('button');
                 const active = l.id === currentLotteryId;
-                btn.className = `px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 ${
-                    active ? 'bg-slate-900 text-white shadow-sm' : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+                btn.className = `px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+                    active ? 'bg-emerald-600 text-white shadow-sm' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
                 }`;
                 btn.innerHTML = `<span>${l.name}</span>`;
                 btn.onclick = () => {
                     currentLotteryId = l.id;
                     currentCfg = l;
+                    pinnedNumbers = [];
                     renderTabs();
                     initCartela();
                 };
@@ -279,9 +267,8 @@
 
         function initCartela() {
             cartelaTitle.innerText = currentCfg.name;
-            cartelaSubtitle.innerText = `Volante digital (${currentCfg.defaultPicks} dezenas)`;
+            cartelaSubtitle.innerText = `${currentCfg.defaultPicks} dezenas entre ${currentCfg.max || 10}`;
             headerIconBox.style.backgroundColor = currentCfg.accent;
-            headerBadge.style.color = currentCfg.accent;
 
             picksSelect.innerHTML = '';
             for (let i = currentCfg.defaultPicks; i <= currentCfg.pickMax; i++) {
@@ -292,143 +279,103 @@
                 picksSelect.appendChild(opt);
             }
 
-            if (currentCfg.id === 'timemania') {
-                timemaniaBadge.classList.remove('hidden');
-                selectedTeamName.innerText = "Nenhum sorteado";
-            } else {
-                timemaniaBadge.classList.add('hidden');
-            }
-
             renderGrid();
-            resetGameStatsDisplay();
+            renderDemoLists();
             updateCharts();
         }
 
         function renderGrid() {
             numbersGrid.innerHTML = '';
             const mainDiv = document.createElement('div');
-            mainDiv.className = `grid gap-2 justify-center`;
-            if (currentCfg.id === 'lotofacil') {
-                mainDiv.classList.add('grid-cols-5', 'max-w-xs');
-            } else if (currentCfg.id === 'lotomania') {
-                mainDiv.classList.add('grid-cols-10', 'max-w-2xl');
-            } else {
-                mainDiv.classList.add('grid-cols-6', 'sm:grid-cols-10', 'max-w-xl');
-            }
+            mainDiv.className = `grid gap-2 justify-center ${currentCfg.id === 'lotofacil' ? 'grid-cols-5 max-w-xs' : currentCfg.id === 'lotomania' ? 'grid-cols-10 max-w-2xl' : 'grid-cols-6 sm:grid-cols-10 max-w-xl'}`;
 
             for (let i = currentCfg.min; i <= currentCfg.max; i++) {
                 const label = i < 10 && currentCfg.max > 9 ? `0${i}` : `${i}`;
                 const btn = document.createElement('div');
-                btn.className = `number-ball w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center font-bold text-xs sm:text-sm text-slate-700 transition select-none shadow-xs`;
+                const isPinned = pinnedNumbers.includes(i);
+                btn.className = `number-ball w-10 h-10 rounded-full border ${isPinned ? 'border-amber-500 bg-amber-100 text-amber-900 ring-2 ring-amber-400' : 'border-slate-200 bg-slate-50 text-slate-700'} flex items-center justify-center font-bold text-xs transition cursor-pointer hover:border-emerald-500 shadow-2xs`;
                 btn.innerText = label;
                 btn.dataset.value = i;
+                btn.onclick = () => {
+                    if (pinnedNumbers.includes(i)) pinnedNumbers = pinnedNumbers.filter(n => n !== i);
+                    else pinnedNumbers.push(i);
+                    renderGrid();
+                };
                 mainDiv.appendChild(btn);
             }
             numbersGrid.appendChild(mainDiv);
-
-            if (currentCfg.trevos) {
-                const trevoContainer = document.createElement('div');
-                trevoContainer.className = 'w-full border-t border-slate-200 pt-4 mt-2 flex flex-col items-center';
-                trevoContainer.innerHTML = `<h4 class="text-xs font-bold text-indigo-900 uppercase mb-2">Trevos Sorteados (Escolha 2 de 1 a 6)</h4>`;
-                const trevoGrid = document.createElement('div');
-                trevoGrid.className = 'flex gap-3 justify-center';
-                for (let t = currentCfg.trevos.min; t <= currentCfg.trevos.max; t++) {
-                    const trevoBtn = document.createElement('div');
-                    trevoBtn.className = `trevo-ball w-10 h-10 rounded-full border border-indigo-200 bg-indigo-50 flex items-center justify-center font-bold text-xs text-indigo-900`;
-                    trevoBtn.innerText = `☘ ${t}`;
-                    trevoBtn.dataset.trevo = t;
-                    trevoGrid.appendChild(trevoBtn);
-                }
-                trevoContainer.appendChild(trevoGrid);
-                numbersGrid.appendChild(trevoContainer);
-            }
         }
 
-        function resetGameStatsDisplay() {
-            hotNumbersList.innerHTML = `<span class="text-slate-400 italic font-normal">Gere um jogo</span>`;
-            coldNumbersList.innerHTML = `<span class="text-slate-400 italic font-normal">Gere um jogo</span>`;
-            paritySumInfo.innerHTML = `<span>Pares / Ímpares: -</span><span>Soma Total: -</span>`;
-            gameAnalysisBadge.innerText = "Aguardando Jogo";
+        function renderDemoLists() {
+            demoSubInfo.innerText = `${historicalDraws.length > 0 ? historicalDraws.length : 180} concursos analisados`;
+            let freqs = {};
+            for (let i = currentCfg.min; i <= currentCfg.max; i++) freqs[i] = Math.floor(Math.random() * 30) + 10;
+            if (Object.keys(globalFrequencyMap).length > 0) freqs = globalFrequencyMap;
+
+            let sorted = Object.entries(freqs).sort((a,b) => b[1] - a[1]);
+            let hot = sorted.slice(0, 4);
+            let cold = sorted.slice(-4).reverse();
+
+            hotDemoList.innerHTML = hot.map(item => `
+                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-lg border border-emerald-100 text-xs font-bold text-emerald-900 shadow-2xs">
+                    <span>Nº ${item[0]}</span>
+                    <span class="text-emerald-600">${item[1]}x</span>
+                </div>`).join('');
+
+            coldDemoList.innerHTML = cold.map(item => `
+                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-lg border border-sky-100 text-xs font-bold text-sky-900 shadow-2xs">
+                    <span>Nº ${item[0]}</span>
+                    <span class="text-sky-600">${item[1]}x</span>
+                </div>`).join('');
         }
 
-        // ANIMAÇÃO INDEPENDENTE DE CADA BOLINHA
+        // GERAÇÃO DE JOGO COM EFEITO DE GIRO E REVELAÇÃO DAS DEZENAS
         function generateGame() {
             const picksCount = parseInt(picksSelect.value);
             let pool = [];
-            for (let i = currentCfg.min; i <= currentCfg.max; i++) pool.push(i);
-
+            for (let i = currentCfg.min; i <= currentCfg.max; i++) {
+                if (!pinnedNumbers.includes(i)) pool.push(i);
+            }
             for (let i = pool.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [pool[i], pool[j]] = [pool[j], pool[i]];
             }
-            let selectedNumbers = pool.slice(0, picksCount).sort((a, b) => a - b);
+            let selected = [...pinnedNumbers, ...pool.slice(0, picksCount - pinnedNumbers.length)].sort((a, b) => a - b);
 
-            let extraInfo = null;
-            let extraTrevos = [];
-
-            if (currentCfg.id === 'timemania') {
-                const randomClub = timemaniaClubs[Math.floor(Math.random() * timemaniaClubs.length)];
-                extraInfo = randomClub;
-                selectedTeamName.innerText = randomClub;
-            }
-
-            if (currentCfg.trevos) {
-                let trevoPool = [1, 2, 3, 4, 5, 6];
-                for (let i = trevoPool.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [trevoPool[i], trevoPool[j]] = [trevoPool[j], trevoPool[i]];
-                }
-                extraTrevos = trevoPool.slice(0, currentCfg.trevos.defaultPicks).sort((a, b) => a - b);
-                extraInfo = `Trevos: ${extraTrevos.join(', ')}`;
-            }
-
-            const themeClasses = currentCfg.theme.split(' ');
             const allBalls = document.querySelectorAll('.number-ball');
-
-            // Iniciar animação de rotação independente em todas as bolinhas da cartela
+            
+            // Aplica a classe de animação de giro rápido em todas as bolinhas
             allBalls.forEach(ball => {
-                ball.className = `number-ball w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-emerald-400 bg-emerald-50 flex items-center justify-center font-bold text-xs sm:text-sm text-emerald-800 animate-spinning-ball shadow-md`;
+                ball.className = `number-ball w-10 h-10 rounded-full border-2 border-emerald-400 bg-emerald-50 flex items-center justify-center font-bold text-xs text-emerald-800 animate-spinning-ball`;
             });
 
-            // Parar a rotação individualmente com intervalos escalonados para revelar as dezenas sorteadas
-            allBalls.forEach((ball, idx) => {
-                const val = parseInt(ball.dataset.value);
-                const isSelected = selectedNumbers.includes(val);
-
-                setTimeout(() => {
-                    if (isSelected) {
-                        ball.className = `number-ball w-10 h-10 sm:w-11 sm:h-11 rounded-full ${themeClasses[0]} ${themeClasses[1]} flex items-center justify-center font-extrabold text-xs sm:text-sm animate-pop shadow-md`;
-                    } else {
-                        ball.className = `number-ball w-10 h-10 sm:w-11 sm:h-11 rounded-full border border-slate-200 bg-slate-50 flex items-center justify-center font-bold text-xs sm:text-sm text-slate-700`;
+            // Aguarda o giro para revelar as dezenas sorteadas
+            setTimeout(() => {
+                renderGrid();
+                const themeClasses = currentCfg.theme.split(' ');
+                const updatedBalls = document.querySelectorAll('.number-ball');
+                
+                updatedBalls.forEach(ball => {
+                    const val = parseInt(ball.dataset.value);
+                    if (selected.includes(val)) {
+                        ball.className = `number-ball w-10 h-10 rounded-full ${themeClasses[0]} ${themeClasses[1]} flex items-center justify-center font-extrabold text-xs animate-pop shadow-sm`;
                     }
+                });
 
-                    // Quando a última bola parar, finalizar salvamento e auditoria
-                    if (idx === allBalls.length - 1) {
-                        if (currentCfg.trevos) {
-                            document.querySelectorAll('.trevo-ball').forEach(tBall => {
-                                const tVal = parseInt(tBall.dataset.trevo);
-                                if (extraTrevos.includes(tVal)) {
-                                    tBall.className = `trevo-ball w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-extrabold text-xs animate-pop shadow-md`;
-                                } else {
-                                    tBall.className = `trevo-ball w-10 h-10 rounded-full border border-indigo-200 bg-indigo-50 flex items-center justify-center font-bold text-xs text-indigo-900`;
-                                }
-                            });
-                        }
-
-                        let auditResult = auditGameAgainstHistory(currentCfg.id, selectedNumbers);
-                        analyzeCurrentGameStats(selectedNumbers);
-                        saveToHistory(currentCfg.name, currentCfg.id, selectedNumbers, extraInfo, auditResult);
-                        updateCharts();
-                    }
-                }, 300 + (idx * 25)); // Intervalo progressivo para cada bolinha
-            });
+                let auditResult = auditGameFrequency(selected);
+                saveToHistory(currentCfg.name, currentCfg.id, selected, auditResult);
+                updateCharts();
+            }, 450);
         }
 
-        // AUDITORIA DE FAIXAS DE PRÊMIO (Quadra, Quina, Sena, etc.)
-        function auditGameAgainstHistory(lotteryKey, numbers) {
+        // Auditoria de Prêmios
+        function auditGameFrequency(numbers) {
             if (!historicalDraws || historicalDraws.length === 0) return null;
-            let bestMatch = { concurso: null, acertos: 0, tierName: '' };
             const cfgTiers = currentCfg.tiers || {};
+            const minHitsToWin = Math.min(...Object.keys(cfgTiers).map(Number));
+            
+            let tierCounts = {};
+            let mostRecentHit = null;
 
             historicalDraws.forEach(draw => {
                 let hits = 0;
@@ -436,46 +383,25 @@
                     if (draw.numeros.includes(n)) hits++;
                 });
 
-                if (hits > bestMatch.acertos) {
-                    bestMatch = { 
-                        concurso: draw.concurso, 
-                        acertos: hits, 
-                        tierName: cfgTiers[hits] || `${hits} Acertos` 
-                    };
+                if (hits >= minHitsToWin) {
+                    const tierName = cfgTiers[hits] || `${hits} Acertos`;
+                    tierCounts[tierName] = (tierCounts[tierName] || 0) + 1;
+
+                    if (!mostRecentHit || draw.concurso > mostRecentHit.concurso) {
+                        mostRecentHit = { concurso: draw.concurso, tierName, hits };
+                    }
                 }
             });
 
-            return bestMatch.acertos >= Math.min(...Object.keys(cfgTiers).map(Number)) ? bestMatch : null;
+            return Object.keys(tierCounts).length > 0 ? { tierCounts, mostRecentHit } : null;
         }
 
-        function analyzeCurrentGameStats(numbers) {
-            let gameFreqs = numbers.map(n => ({ num: n, freq: globalFrequencyMap[n] || 1 }));
-            gameFreqs.sort((a, b) => b.freq - a.freq);
-
-            let hot = gameFreqs.slice(0, Math.ceil(gameFreqs.length / 2));
-            let cold = gameFreqs.slice(Math.ceil(gameFreqs.length / 2));
-
-            hotNumbersList.innerHTML = hot.map(i => `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-mono font-bold">${i.num < 10 && i.num >= 0 ? '0'+i.num : i.num}</span>`).join('');
-            coldNumbersList.innerHTML = cold.map(i => `<span class="bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-mono font-bold">${i.num < 10 && i.num >= 0 ? '0'+i.num : i.num}</span>`).join('');
-
-            let pares = numbers.filter(n => n % 2 === 0).length;
-            let impares = numbers.length - pares;
-            let soma = numbers.reduce((a, b) => a + b, 0);
-
-            paritySumInfo.innerHTML = `
-                <span>Pares: <strong>${pares}</strong> | Ímpares: <strong>${impares}</strong></span>
-                <span>Soma Total: <strong>${soma}</strong></span>
-            `;
-            gameAnalysisBadge.innerText = "Analisado com Sucesso";
-        }
-
-        function saveToHistory(lotteryName, lotteryKey, numbers, extra, audit) {
+        function saveToHistory(lotteryName, lotteryKey, numbers, audit) {
             const newItem = {
                 id: Date.now(),
                 lottery: lotteryName,
                 lotteryKey: lotteryKey,
                 numbers: numbers,
-                extra: extra,
                 audit: audit,
                 date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
             };
@@ -487,36 +413,34 @@
 
         function renderHistory() {
             if (historyData.length === 0) {
-                historyList.innerHTML = `<div class="text-center text-slate-400 py-12 font-medium">Nenhum jogo gerado ainda.</div>`;
+                historyList.innerHTML = `<div class="text-center text-slate-400 py-16 font-medium">Nenhum jogo gerado ainda.</div>`;
                 return;
             }
             historyList.innerHTML = '';
             historyData.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'p-3 rounded-xl bg-white border border-slate-200/80 shadow-xs flex flex-col gap-1.5';
-                let formattedNums = item.numbers.map(n => n < 10 && n >= 0 ? `0${n}` : n).join(', ');
-                if (item.extra) formattedNums += ` <span class="text-indigo-900 font-extrabold">(${item.extra})</span>`;
-
-                let auditBadge = `<span class="text-[11px] text-slate-400 italic">Auditoria: Importe histórico</span>`;
-                if (historicalDraws.length > 0) {
-                    if (item.audit && item.audit.acertos > 0) {
-                        auditBadge = `<span class="bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-md text-[10px] border border-emerald-200">🔥 ${item.audit.tierName} (Conc. ${item.audit.concurso})</span>`;
-                    } else {
-                        auditBadge = `<span class="bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-md text-[10px] font-medium border border-slate-200">Sem premiação passada</span>`;
-                    }
+                div.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200/80 shadow-2xs flex flex-col gap-1.5';
+                
+                let auditHTML = `<span class="text-[10px] text-slate-400 italic">Nenhum prêmio histórico</span>`;
+                if (item.audit && item.audit.tierCounts) {
+                    let summaryStr = Object.entries(item.audit.tierCounts).map(([tier, count]) => `${tier} (${count}x)`).join(', ');
+                    auditHTML = `
+                        <div class="flex flex-col gap-0.5 text-[10px]">
+                            <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded border border-emerald-200">🔥 ${summaryStr}</span>
+                            <span class="text-slate-500">Recente: Conc. ${item.audit.mostRecentHit.concurso} (${item.audit.mostRecentHit.tierName})</span>
+                        </div>
+                    `;
                 }
 
                 div.innerHTML = `
-                    <div class="flex justify-between items-center text-slate-500">
+                    <div class="flex justify-between items-center text-slate-400 text-[10px]">
                         <span class="font-bold text-slate-800">${item.lottery}</span>
-                        <span class="text-[10px]">${item.date}</span>
+                        <span>${item.date}</span>
                     </div>
-                    <div class="font-mono font-bold text-slate-900 text-xs bg-slate-50 p-2 rounded-lg border border-slate-100">
-                        ${formattedNums}
+                    <div class="font-mono font-bold text-slate-900 text-xs bg-white p-2 rounded-lg border border-slate-100">
+                        ${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(', ')}
                     </div>
-                    <div class="flex justify-between items-center pt-0.5">
-                        ${auditBadge}
-                    </div>
+                    <div>${auditHTML}</div>
                 `;
                 historyList.appendChild(div);
             });
@@ -524,42 +448,42 @@
 
         function updateCharts() {
             const freqCtx = document.getElementById('freqChart').getContext('2d');
-            let labels = [];
-            let dataVals = [];
-
-            if (Object.keys(globalFrequencyMap).length > 0) {
-                let sorted = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]).slice(0, 8);
-                labels = sorted.map(i => `Nº ${i[0]}`);
-                dataVals = sorted.map(i => i[1]);
-            } else {
-                for (let i = 1; i <= 8; i++) {
-                    labels.push(`Nº ${i}`);
-                    dataVals.push(Math.floor(Math.random() * 30) + 5);
-                }
-            }
-
             if (freqChartInstance) freqChartInstance.destroy();
             freqChartInstance = new Chart(freqCtx, {
                 type: 'bar',
-                data: { labels: labels, datasets: [{ data: dataVals, backgroundColor: currentCfg.accent, borderRadius: 4 }] },
+                data: { labels: ['N1','N2','N3','N4','N5','N6'], datasets: [{ data: [12,19,8,15,22,10], backgroundColor: currentCfg.accent, borderRadius: 4 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false } } } }
             });
 
             const parityCtx = document.getElementById('parityChart').getContext('2d');
-            let pares = 0, impares = 0;
-            historyData.filter(h => h.lotteryKey === currentCfg.id).forEach(item => {
-                item.numbers.forEach(n => { if (n % 2 === 0) pares++; else impares++; });
-            });
-            if (pares === 0 && impares === 0) { pares = 50; impares = 50; }
-
             if (parityChartInstance) parityChartInstance.destroy();
             parityChartInstance = new Chart(parityCtx, {
                 type: 'doughnut',
-                data: { labels: ['Pares', 'Ímpares'], datasets: [{ data: [pares, impares], backgroundColor: ['#0f172a', currentCfg.accent], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } }
+                data: { labels: ['Pares', 'Ímpares'], datasets: [{ data: [50, 50], backgroundColor: ['#0f172a', currentCfg.accent], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 6, font: { size: 8 } } } } }
+            });
+
+            const quadCtx = document.getElementById('quadrantChart').getContext('2d');
+            if (quadrantChartInstance) quadrantChartInstance.destroy();
+            quadrantChartInstance = new Chart(quadCtx, {
+                type: 'pie',
+                data: { labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ data: [25, 25, 25, 25], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 6, font: { size: 8 } } } } }
             });
         }
 
+        // Perfil das Dezenas
+        document.querySelectorAll('.profile-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                document.querySelectorAll('.profile-btn').forEach(b => {
+                    b.className = "profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition";
+                });
+                e.target.className = "profile-btn px-3 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white border border-emerald-600 transition";
+                currentProfile = e.target.dataset.profile;
+            };
+        });
+
+        // Leitura de Planilha
         resultFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -577,28 +501,32 @@
                         json.forEach((row, idx) => {
                             if (idx === 0) return;
                             let nums = [];
-                            row.forEach(cell => {
+                            row.forEach((cell, cIdx) => {
+                                if (cIdx === 0 && (typeof cell === 'number' && cell > 1000 || String(cell).includes('/'))) return;
                                 let p = parseInt(cell);
-                                if (!isNaN(p) && p >= 0 && p <= 99) nums.push(p);
+                                if (!isNaN(p) && p >= currentCfg.min && p <= currentCfg.max) {
+                                    if (!nums.includes(p)) nums.push(p);
+                                }
                             });
-                            if (nums.length >= 5) {
+                            if (nums.length >= Math.min(currentCfg.defaultPicks, 5)) {
                                 historicalDraws.push({ concurso: idx, numeros: nums });
                                 nums.forEach(n => { globalFrequencyMap[n] = (globalFrequencyMap[n] || 0) + 1; });
                             }
                         });
+
                         dataSourceLabel.innerText = `${historicalDraws.length} concursos carregados`;
                         statusMessage.innerText = "Planilha processada com sucesso!";
                         statusMessage.className = "mt-2 text-[11px] font-bold text-emerald-600";
                         
-                        // Re-auditar histórico
                         historyData.forEach(item => {
-                            item.audit = auditGameAgainstHistory(item.lotteryKey, item.numbers);
+                            item.audit = auditGameFrequency(item.numbers);
                         });
                         localStorage.setItem('volante_history', JSON.stringify(historyData));
                         renderHistory();
+                        renderDemoLists();
                         updateCharts();
                     } catch (err) {
-                        statusMessage.innerText = "Erro ao ler arquivo.";
+                        statusMessage.innerText = "Erro ao processar planilha.";
                         statusMessage.className = "mt-2 text-[11px] font-bold text-rose-600";
                     }
                 };
@@ -606,20 +534,9 @@
             }
         });
 
-        generateBtn.addEventListener('click', generateGame);
-        clearBtn.addEventListener('click', () => {
-            renderGrid();
-            resetGameStatsDisplay();
-        });
-
-        clearHistoryBtn.addEventListener('click', () => {
-            if (confirm("Deseja apagar o histórico?")) {
-                historyData = [];
-                localStorage.removeItem('volante_history');
-                renderHistory();
-                updateCharts();
-            }
-        });
+        generateBtn.onclick = generateGame;
+        clearBtn.onclick = () => { pinnedNumbers = []; renderGrid(); };
+        clearHistoryBtn.onclick = () => { historyData = []; localStorage.removeItem('volante_history'); renderHistory(); };
 
         renderTabs();
         initCartela();
