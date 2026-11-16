@@ -107,6 +107,9 @@
                     <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Volante</span>
                 </div>
                 <div id="numbersGrid" class="w-full flex flex-col items-center justify-center py-2 gap-3"></div>
+                
+                <!-- Sub-área para Trevos (+Milionária) ou Time do Coração (Timemania) -->
+                <div id="extraArea" class="w-full mt-4 pt-4 border-t border-slate-100 hidden"></div>
             </div>
 
             <!-- Painel de Demonstração de Mais e Menos Sorteadas -->
@@ -200,18 +203,29 @@
         Volante Digital Pro &bull; Padrão Executivo de Alta Performance
     </footer>
 
-    <!-- Lógica JavaScript com Animação de Giro nas Bolinhas -->
+    <!-- Lógica JavaScript Corrigida com Trevos e Timemania -->
     <script>
+        const timemaniaTeams = [
+            "ABC/RN", "Águia de Marabá/PA", "Altos/PI", "Amazonas/FC", "América/MG", "América/RN", "América/SP", 
+            "Athletico-PR", "Atlético/GO", "Atlético/MG", "Atlético/CE", "Avaí/SC", "Bahia/BA", "Botafogo/FR", 
+            "Botafogo/PB", "Botafogo/SP", "Brusque/SC", "Ceará/CE", "Chapecoense/SC", "Corinthians/SP", "Coritiba/PR", 
+            "CRB/AL", "Criciúma/SC", "Cruzeiro/MG", "Cuiabá/MT", "CSA/AL", "Ferroviário/CE", "Figueirense/SC", 
+            "Flamengo/RJ", "Fluminense/RJ", "Fortaleza/CE", "Goiás/GO", "Grêmio/RS", "Guarani/SP", "Internacional/RS", 
+            "Ituano/SP", "Juventude/RS", "Londrina/PR", "Náutico/PE", "Operário/PR", "Palmeiras/SP", "Paysandu/PA", 
+            "Ponte Preta/SP", "Remo/PA", "Sampaio Corrêa/MA", "Santa Cruz/PE", "Santos/SP", "São Paulo/SP", 
+            "Sport/PE", "Tombense/MG", "Vasco da Gama/RJ", "Vitória/BA", "Volta Redonda/RJ", "Ypiranga/RS"
+        ];
+
         const lotteries = [
             { id: 'megasena', name: 'Mega-Sena', min: 1, max: 60, defaultPicks: 6, pickMax: 15, accent: '#059669', theme: 'bg-emerald-600 text-white shadow-emerald-600/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Sena'} },
             { id: 'quina', name: 'Quina', min: 1, max: 80, defaultPicks: 5, pickMax: 15, accent: '#7c3aed', theme: 'bg-violet-700 text-white shadow-violet-700/30', tiers: {2: 'Duque', 3: 'Terno', 4: 'Quadra', 5: 'Quina'} },
             { id: 'lotofacil', name: 'Lotofácil', min: 1, max: 25, defaultPicks: 15, pickMax: 20, accent: '#a21caf', theme: 'bg-fuchsia-700 text-white shadow-fuchsia-700/30', tiers: {11: '11 Pts', 12: '12 Pts', 13: '13 Pts', 14: '14 Pts', 15: '15 Pts'} },
             { id: 'lotomania', name: 'Lotomania', min: 0, max: 99, defaultPicks: 50, pickMax: 50, accent: '#ea580c', theme: 'bg-orange-600 text-white shadow-orange-600/30', tiers: {15: '15 Pts', 16: '16 Pts', 17: '17 Pts', 18: '18 Pts', 19: '19 Pts', 20: '20 Pts'} },
-            { id: 'timemania', name: 'Timemania', min: 1, max: 80, defaultPicks: 10, pickMax: 10, accent: '#d97706', theme: 'bg-amber-500 text-slate-950 shadow-amber-500/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
+            { id: 'timemania', name: 'Timemania', min: 1, max: 80, defaultPicks: 10, pickMax: 10, hasTeam: true, accent: '#d97706', theme: 'bg-amber-500 text-slate-950 shadow-amber-500/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
             { id: 'duplasena', name: 'Dupla Sena', min: 1, max: 50, defaultPicks: 6, pickMax: 15, accent: '#dc2626', theme: 'bg-red-700 text-white shadow-red-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Sena'} },
             { id: 'diadesorte', name: 'Dia de Sorte', min: 1, max: 31, defaultPicks: 7, pickMax: 15, accent: '#0284c7', theme: 'bg-sky-600 text-white shadow-sky-600/30', tiers: {4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
             { id: 'supersete', name: 'Super Sete', min: 0, max: 9, defaultPicks: 7, pickMax: 7, accent: '#0d9488', theme: 'bg-teal-600 text-white shadow-teal-600/30', tiers: {3: '3 Acertos', 4: '4 Acertos', 5: '5 Acertos', 6: '6 Acertos', 7: '7 Acertos'} },
-            { id: 'maismilionaria', name: '+Milionária', min: 1, max: 50, defaultPicks: 6, pickMax: 12, accent: '#4338ca', theme: 'bg-indigo-700 text-white shadow-indigo-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Prêmio'} },
+            { id: 'maismilionaria', name: '+Milionária', min: 1, max: 50, defaultPicks: 6, pickMax: 12, hasTrevos: true, trevosMin: 1, trevosMax: 6, trevosPicks: 2, accent: '#4338ca', theme: 'bg-indigo-700 text-white shadow-indigo-700/30', tiers: {4: 'Quadra', 5: 'Quina', 6: 'Prêmio'} },
             { id: 'loteca', name: 'Loteca', min: 1, max: 14, defaultPicks: 14, pickMax: 14, accent: '#b45309', theme: 'bg-amber-700 text-white shadow-amber-700/30', tiers: {13: '13 Acertos', 14: '14 Acertos'} }
         ];
 
@@ -221,7 +235,10 @@
         let historicalDraws = [];
         let globalFrequencyMap = {};
         let pinnedNumbers = [];
+        let pinnedTrevos = [];
         let currentProfile = 'balanced';
+        let selectedTeam = '';
+        let selectedTrevos = [];
 
         let freqChartInstance = null;
         let parityChartInstance = null;
@@ -233,6 +250,7 @@
         const cartelaTitle = document.getElementById('cartelaTitle');
         const cartelaSubtitle = document.getElementById('cartelaSubtitle');
         const numbersGrid = document.getElementById('numbersGrid');
+        const extraArea = document.getElementById('extraArea');
         const picksSelect = document.getElementById('picksSelect');
         const generateBtn = document.getElementById('generateBtn');
         const clearBtn = document.getElementById('clearBtn');
@@ -258,6 +276,9 @@
                     currentLotteryId = l.id;
                     currentCfg = l;
                     pinnedNumbers = [];
+                    pinnedTrevos = [];
+                    selectedTeam = '';
+                    selectedTrevos = [];
                     renderTabs();
                     initCartela();
                 };
@@ -280,6 +301,7 @@
             }
 
             renderGrid();
+            renderExtraArea();
             renderDemoLists();
             updateCharts();
         }
@@ -306,6 +328,44 @@
             numbersGrid.appendChild(mainDiv);
         }
 
+        function renderExtraArea() {
+            extraArea.innerHTML = '';
+            if (currentCfg.hasTeam) {
+                extraArea.classList.remove('hidden');
+                extraArea.innerHTML = `
+                    <div class="flex flex-col gap-2">
+                        <span class="text-xs font-bold text-slate-700">⚽ Time do Coração (Timemania)</span>
+                        <div class="flex items-center justify-between bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-xl">
+                            <span id="teamDisplayLabel" class="text-xs font-extrabold text-amber-900">${selectedTeam || 'Nenhum time sorteado ainda'}</span>
+                            <span class="text-[10px] text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded font-bold uppercase">Sorteio Automático</span>
+                        </div>
+                    </div>
+                `;
+            } else if (currentCfg.hasTrevos) {
+                extraArea.classList.remove('hidden');
+                let trevosHTML = `<div class="flex flex-col gap-2"><span class="text-xs font-bold text-slate-750">🍀 Trevos da Sorte (+Milionária - Escolha ${currentCfg.trevosPicks})</span><div class="flex gap-2 justify-center">`;
+                for (let t = currentCfg.trevosMin; t <= currentCfg.trevosMax; t++) {
+                    const isSelected = selectedTrevos.includes(t);
+                    trevosHTML += `<div class="trevo-ball w-10 h-10 rounded-full border ${isSelected ? 'bg-indigo-600 text-white border-indigo-700 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200'} flex items-center justify-center font-bold text-xs cursor-pointer transition" data-trevo="${t}">${t}</div>`;
+                }
+                trevosHTML += `</div></div>`;
+                extraArea.innerHTML = trevosHTML;
+
+                document.querySelectorAll('.trevo-ball').forEach(b => {
+                    b.onclick = () => {
+                        const val = parseInt(b.dataset.trevo);
+                        if (selectedTrevos.includes(val)) selectedTrevos = selectedTrevos.filter(x => x !== val);
+                        else {
+                            if (selectedTrevos.length < currentCfg.trevosPicks) selectedTrevos.push(val);
+                        }
+                        renderExtraArea();
+                    };
+                });
+            } else {
+                extraArea.classList.add('hidden');
+            }
+        }
+
         function renderDemoLists() {
             demoSubInfo.innerText = `${historicalDraws.length > 0 ? historicalDraws.length : 180} concursos analisados`;
             let freqs = {};
@@ -329,7 +389,7 @@
                 </div>`).join('');
         }
 
-        // GERAÇÃO DE JOGO COM EFEITO DE GIRO E REVELAÇÃO DAS DEZENAS
+        // GERAÇÃO DE JOGO COM ANIMAÇÃO E SORTEIO DE TIMES/TREVOS
         function generateGame() {
             const picksCount = parseInt(picksSelect.value);
             let pool = [];
@@ -342,16 +402,30 @@
             }
             let selected = [...pinnedNumbers, ...pool.slice(0, picksCount - pinnedNumbers.length)].sort((a, b) => a - b);
 
+            // Sorteio Timemania Team
+            if (currentCfg.hasTeam) {
+                const randomIndex = Math.floor(Math.random() * timemaniaTeams.length);
+                selectedTeam = timemaniaTeams[randomIndex];
+            }
+
+            // Sorteio Trevos +Milionária
+            if (currentCfg.hasTrevos && selectedTrevos.length < currentCfg.trevosPicks) {
+                let trevPool = [];
+                for (let t = currentCfg.trevosMin; t <= currentCfg.trevosMax; t++) {
+                    if (!selectedTrevos.includes(t)) trevPool.push(t);
+                }
+                trevPool.sort(() => Math.random() - 0.5);
+                selectedTrevos = [...selectedTrevos, ...trevPool.slice(0, currentCfg.trevosPicks - selectedTrevos.length)].sort((a,b)=>a-b);
+            }
+
             const allBalls = document.querySelectorAll('.number-ball');
-            
-            // Aplica a classe de animação de giro rápido em todas as bolinhas
             allBalls.forEach(ball => {
                 ball.className = `number-ball w-10 h-10 rounded-full border-2 border-emerald-400 bg-emerald-50 flex items-center justify-center font-bold text-xs text-emerald-800 animate-spinning-ball`;
             });
 
-            // Aguarda o giro para revelar as dezenas sorteadas
             setTimeout(() => {
                 renderGrid();
+                renderExtraArea();
                 const themeClasses = currentCfg.theme.split(' ');
                 const updatedBalls = document.querySelectorAll('.number-ball');
                 
@@ -363,12 +437,11 @@
                 });
 
                 let auditResult = auditGameFrequency(selected);
-                saveToHistory(currentCfg.name, currentCfg.id, selected, auditResult);
+                saveToHistory(currentCfg.name, currentCfg.id, selected, auditResult, selectedTeam, selectedTrevos);
                 updateCharts();
             }, 450);
         }
 
-        // Auditoria de Prêmios
         function auditGameFrequency(numbers) {
             if (!historicalDraws || historicalDraws.length === 0) return null;
             const cfgTiers = currentCfg.tiers || {};
@@ -396,13 +469,15 @@
             return Object.keys(tierCounts).length > 0 ? { tierCounts, mostRecentHit } : null;
         }
 
-        function saveToHistory(lotteryName, lotteryKey, numbers, audit) {
+        function saveToHistory(lotteryName, lotteryKey, numbers, audit, team, trevos) {
             const newItem = {
                 id: Date.now(),
                 lottery: lotteryName,
                 lotteryKey: lotteryKey,
                 numbers: numbers,
                 audit: audit,
+                team: team,
+                trevos: trevos ? [...trevos] : null,
                 date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
             };
             historyData.unshift(newItem);
@@ -421,6 +496,14 @@
                 const div = document.createElement('div');
                 div.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200/80 shadow-2xs flex flex-col gap-1.5';
                 
+                let extraInfoHTML = '';
+                if (item.team) {
+                    extraInfoHTML += `<div class="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-1 rounded border border-amber-200">⚽ Time: ${item.team}</div>`;
+                }
+                if (item.trevos && item.trevos.length > 0) {
+                    extraInfoHTML += `<div class="text-[10px] font-bold text-indigo-800 bg-indigo-50 px-2 py-1 rounded border border-indigo-200">🍀 Trevos: ${item.trevos.join(', ')}</div>`;
+                }
+
                 let auditHTML = `<span class="text-[10px] text-slate-400 italic">Nenhum prêmio histórico</span>`;
                 if (item.audit && item.audit.tierCounts) {
                     let summaryStr = Object.entries(item.audit.tierCounts).map(([tier, count]) => `${tier} (${count}x)`).join(', ');
@@ -440,6 +523,7 @@
                     <div class="font-mono font-bold text-slate-900 text-xs bg-white p-2 rounded-lg border border-slate-100">
                         ${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(', ')}
                     </div>
+                    ${extraInfoHTML}
                     <div>${auditHTML}</div>
                 `;
                 historyList.appendChild(div);
@@ -472,7 +556,6 @@
             });
         }
 
-        // Perfil das Dezenas
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.onclick = (e) => {
                 document.querySelectorAll('.profile-btn').forEach(b => {
@@ -483,7 +566,6 @@
             };
         });
 
-        // Leitura de Planilha
         resultFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -535,7 +617,7 @@
         });
 
         generateBtn.onclick = generateGame;
-        clearBtn.onclick = () => { pinnedNumbers = []; renderGrid(); };
+        clearBtn.onclick = () => { pinnedNumbers = []; pinnedTrevos = []; selectedTeam = ''; selectedTrevos = []; initCartela(); };
         clearHistoryBtn.onclick = () => { historyData = []; localStorage.removeItem('volante_history'); renderHistory(); };
 
         renderTabs();
