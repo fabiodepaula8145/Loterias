@@ -103,7 +103,7 @@
                     </div>
                 </div>
 
-                <!-- Filtros Avançados de Fechamento -->
+                <!-- Filtros Avançados e Opção de Aposta Espelho (Lotomania) -->
                 <div class="border-t border-slate-100 pt-3 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs">
                     <div class="flex items-center gap-2 flex-wrap">
                         <span class="font-bold text-slate-700">Filtros Inteligentes:</span>
@@ -114,6 +114,12 @@
                         <label class="flex items-center gap-1.5 cursor-pointer bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-200">
                             <input type="checkbox" id="filterConsecutivos" checked class="accent-emerald-600">
                             <span class="text-slate-600 font-medium">Máx 2 Consecutivos</span>
+                        </label>
+                    </div>
+                    <div id="mirrorOptionWrapper" class="hidden">
+                        <label class="flex items-center gap-1.5 cursor-pointer bg-orange-50 px-3 py-1.5 rounded-lg border border-orange-200 text-orange-900 font-bold">
+                            <input type="checkbox" id="mirrorBetCheck" class="accent-orange-600">
+                            <span>🔄 Gerar Aposta Espelho (Lotomania)</span>
                         </label>
                     </div>
                 </div>
@@ -132,42 +138,54 @@
                 <div id="extraArea" class="w-full mt-4 pt-4 border-t border-slate-100 hidden"></div>
             </div>
 
-            <!-- Painel de Análise Real do Histórico -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col gap-4">
-                <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+            <!-- Dashboard Analítico Completo (Último Resultado, Mais Sorteadas, Atrasadas, Tendências, Quadrante) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col gap-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-3 gap-2">
                     <div>
                         <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                            📊 Análise Real do Histórico
+                            📊 Dashboard Estatístico & Último Concurso
                         </h3>
-                        <p id="demoSubInfo" class="text-[11px] text-slate-400 mt-0.5">180 concursos analisados</p>
+                        <p id="demoSubInfo" class="text-[11px] text-slate-400 mt-0.5">180 concursos analisados (Ordem cronológica: mais antigo no topo, mais recente na base)</p>
                     </div>
-                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Preciso</span>
+                    <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase">Dashboard Pro</span>
                 </div>
 
+                <!-- Card Destaque: Último Resultado -->
+                <div class="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl shadow-sm flex flex-col gap-2">
+                    <div class="flex justify-between items-center text-xs text-slate-300">
+                        <span id="lastDrawTitle" class="font-extrabold uppercase text-emerald-400">Último Concurso Oficial (Mais Recente)</span>
+                        <span id="lastDrawNumber" class="font-mono bg-slate-800 px-2 py-0.5 rounded text-[11px]">Concurso --</span>
+                    </div>
+                    <div id="lastDrawBalls" class="flex flex-wrap gap-2 py-1 font-mono font-bold text-xs">
+                        <span class="text-slate-400 italic">Nenhum concurso carregado ainda.</span>
+                    </div>
+                </div>
+
+                <!-- Listas de Destaque: Mais Sorteadas vs Atrasadas -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-emerald-50/40 p-3.5 rounded-xl border border-emerald-100 flex flex-col gap-2">
-                        <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">🔥 Mais Sorteadas (Real)</span>
+                    <div class="bg-emerald-50/40 p-4 rounded-2xl border border-emerald-100 flex flex-col gap-2">
+                        <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider flex items-center gap-1">🔥 Top Dezenas Mais Sorteadas</span>
                         <div id="hotDemoList" class="flex flex-col gap-1.5"></div>
                     </div>
-                    <div class="bg-sky-50/40 p-3.5 rounded-xl border border-sky-100 flex flex-col gap-2">
-                        <span class="text-[10px] font-bold text-sky-800 uppercase tracking-wider">⏳ Menos Sorteadas (Real)</span>
-                        <div id="coldDemoList" class="flex flex-col gap-1.5"></div>
+                    <div class="bg-amber-50/40 p-4 rounded-2xl border border-amber-100 flex flex-col gap-2">
+                        <span class="text-[10px] font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1">⏳ Dezenas Mais Atrasadas</span>
+                        <div id="delayedDemoList" class="flex flex-col gap-1.5"></div>
                     </div>
                 </div>
 
                 <!-- Gráficos Analíticos -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-2">
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Frequência (Top Dezenas)</span>
-                        <div class="w-full h-32 relative"><canvas id="freqChart"></canvas></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-1">
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60 flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Tendência Recente (Freq)</span>
+                        <div class="w-full h-36 relative"><canvas id="freqChart"></canvas></div>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60 flex flex-col items-center">
                         <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Pares vs Ímpares</span>
-                        <div class="w-full h-32 relative"><canvas id="parityChart"></canvas></div>
+                        <div class="w-full h-36 relative"><canvas id="parityChart"></canvas></div>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/60 flex flex-col items-center">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Quadrantes</span>
-                        <div class="w-full h-32 relative"><canvas id="quadrantChart"></canvas></div>
+                    <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60 flex flex-col items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase mb-2">Distribuição de Quadrantes</span>
+                        <div class="w-full h-36 relative"><canvas id="quadrantChart"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -213,7 +231,7 @@
             <!-- Importação de Planilha -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
                 <h3 class="font-extrabold text-slate-900 text-xs uppercase tracking-wider mb-2">📁 Importar Histórico</h3>
-                <p class="text-[11px] text-slate-400 mb-3">Carregue CSV/XLSX para auditoria de prêmios.</p>
+                <p class="text-[11px] text-slate-400 mb-3">Carregue CSV/XLSX. (Topo = Mais Antigo, Base = Mais Recente)</p>
                 <label class="flex flex-col items-center justify-center p-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-emerald-500 bg-slate-50 transition">
                     <span class="text-xs font-semibold text-slate-600 truncate max-w-xs" id="fileNameDisplay">Selecionar arquivo...</span>
                     <input type="file" id="resultFile" accept=".csv, .xlsx, .xls" class="hidden">
@@ -239,7 +257,7 @@
         Volante Digital Pro &bull; Padrão Executivo de Alta Performance
     </footer>
 
-    <!-- Lógica JavaScript com Cálculo Estatístico Real e Preciso -->
+    <!-- Lógica JavaScript Atualizada para Leitura Cronológica Correta e Dashboard Completo -->
     <script>
         const timemaniaTeams = [
             "ABC/RN", "Águia de Marabá/PA", "Altos/PI", "Amazonas/FC", "América/MG", "América/RN", "América/SP", 
@@ -268,8 +286,9 @@
         let currentLotteryId = 'megasena';
         let currentCfg = lotteries[0];
         let historyData = JSON.parse(localStorage.getItem('volante_history')) || [];
-        let historicalDraws = [];
+        let historicalDraws = []; // Ordem original da tabela (topo = mais antigo, base = mais recente)
         let globalFrequencyMap = {};
+        let delayMap = {}; // Atraso de cada dezena (quantos concursos desde a última aparição na base)
         let pinnedNumbers = [];
         let currentProfile = 'balanced';
 
@@ -288,6 +307,8 @@
         const closureSelect = document.getElementById('closureSelect');
         const filterParidade = document.getElementById('filterParidade');
         const filterConsecutivos = document.getElementById('filterConsecutivos');
+        const mirrorOptionWrapper = document.getElementById('mirrorOptionWrapper');
+        const mirrorBetCheck = document.getElementById('mirrorBetCheck');
         const generateBtn = document.getElementById('generateBtn');
         const clearBtn = document.getElementById('clearBtn');
         const historyList = document.getElementById('historyList');
@@ -296,13 +317,15 @@
         const fileNameDisplay = document.getElementById('fileNameDisplay');
         const statusMessage = document.getElementById('statusMessage');
         const hotDemoList = document.getElementById('hotDemoList');
-        const coldDemoList = document.getElementById('coldDemoList');
+        const delayedDemoList = document.getElementById('delayedDemoList');
         const demoSubInfo = document.getElementById('demoSubInfo');
+        const lastDrawTitle = document.getElementById('lastDrawTitle');
+        const lastDrawNumber = document.getElementById('lastDrawNumber');
+        const lastDrawBalls = document.getElementById('lastDrawBalls');
         const checkResultInput = document.getElementById('checkResultInput');
         const checkResultBtn = document.getElementById('checkResultBtn');
         const checkFeedback = document.getElementById('checkFeedback');
 
-        // Gera 180 concursos simulados realistas para demonstração inicial caso o usuário não carregue planilha
         function generateDefaultDemoDraws() {
             historicalDraws = [];
             for (let c = 1; c <= 180; c++) {
@@ -312,14 +335,20 @@
                 let drawNums = pool.slice(0, currentCfg.defaultPicks).sort((a,b)=>a-b);
                 historicalDraws.push({ concurso: c, numeros: drawNums });
             }
-            recalculateFrequencyMap();
+            processAnalytics();
         }
 
-        function recalculateFrequencyMap() {
+        // Processa estatísticas considerando que historicalDraws[0] é o mais antigo (topo) 
+        // e historicalDraws[length - 1] é o mais recente (base / último resultado)
+        function processAnalytics() {
             globalFrequencyMap = {};
+            delayMap = {};
             for (let i = currentCfg.min; i <= currentCfg.max; i++) {
                 globalFrequencyMap[i] = 0;
+                delayMap[i] = 999; // Valor inicial alto se nunca apareceu
             }
+
+            // Conta frequências em toda a base
             historicalDraws.forEach(draw => {
                 draw.numeros.forEach(n => {
                     if (globalFrequencyMap[n] !== undefined) {
@@ -327,6 +356,19 @@
                     }
                 });
             });
+
+            // Calcula o atraso (quantos concursos atrás foi visto pela última vez, percorrendo da base para o topo)
+            const totalDraws = historicalDraws.length;
+            for (let i = currentCfg.min; i <= currentCfg.max; i++) {
+                let foundDelay = totalDraws; // Se não achar em nenhum, o atraso é o total de concursos
+                for (let idx = totalDraws - 1; idx >= 0; idx--) {
+                    if (historicalDraws[idx].numeros.includes(i)) {
+                        foundDelay = (totalDraws - 1) - idx; // 0 significa que saiu no último concurso
+                        break;
+                    }
+                }
+                delayMap[i] = foundDelay;
+            }
         }
 
         function renderTabs() {
@@ -354,6 +396,13 @@
             cartelaSubtitle.innerText = `${currentCfg.defaultPicks} dezenas entre ${currentCfg.max || 10}`;
             headerIconBox.style.backgroundColor = currentCfg.accent;
 
+            if (currentCfg.id === 'lotomania') {
+                mirrorOptionWrapper.classList.remove('hidden');
+            } else {
+                mirrorOptionWrapper.classList.add('hidden');
+                mirrorBetCheck.checked = false;
+            }
+
             picksSelect.innerHTML = '';
             for (let i = currentCfg.defaultPicks; i <= currentCfg.pickMax; i++) {
                 const opt = document.createElement('option');
@@ -366,12 +415,12 @@
             if (historicalDraws.length === 0) {
                 generateDefaultDemoDraws();
             } else {
-                recalculateFrequencyMap();
+                processAnalytics();
             }
 
             renderGrid();
             renderExtraArea([]);
-            renderDemoLists();
+            renderDashboard();
             updateCharts();
         }
 
@@ -381,11 +430,13 @@
             mainDiv.className = `grid gap-2 justify-center ${currentCfg.id === 'lotofacil' ? 'grid-cols-5 max-w-xs' : currentCfg.id === 'lotomania' ? 'grid-cols-10 max-w-2xl' : 'grid-cols-6 sm:grid-cols-10 max-w-xl'}`;
 
             for (let i = currentCfg.min; i <= currentCfg.max; i++) {
-                const label = i < 10 && currentCfg.max > 9 ? `0${i}` : `${i}`;
+                let displayLabel = i < 10 && currentCfg.max > 9 ? `0${i}` : `${i}`;
+                if (currentCfg.id === 'lotomania' && i === 0) displayLabel = '00';
+                
                 const btn = document.createElement('div');
                 const isPinned = pinnedNumbers.includes(i);
                 btn.className = `number-ball w-10 h-10 rounded-full border ${isPinned ? 'border-amber-500 bg-amber-100 text-amber-900 ring-2 ring-amber-400' : 'border-slate-200 bg-slate-50 text-slate-700'} flex items-center justify-center font-bold text-xs transition cursor-pointer hover:border-emerald-500 shadow-2xs`;
-                btn.innerText = label;
+                btn.innerText = displayLabel;
                 btn.dataset.value = i;
                 btn.onclick = () => {
                     if (pinnedNumbers.includes(i)) pinnedNumbers = pinnedNumbers.filter(n => n !== i);
@@ -424,25 +475,47 @@
             }
         }
 
-        // Renderiza as Listas Reais de Mais e Menos Sorteadas baseadas no Histórico
-        function renderDemoLists() {
-            demoSubInfo.innerText = `${historicalDraws.length} concursos analisados`;
-            
-            let sorted = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
-            let hot = sorted.slice(0, 4);
-            let cold = sorted.slice(-4).reverse();
+        function renderDashboard() {
+            demoSubInfo.innerText = `${historicalDraws.length} concursos analisados (Ordem: mais antigo no topo, mais recente na base)`;
 
-            hotDemoList.innerHTML = hot.map(item => `
-                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-lg border border-emerald-100 text-xs font-bold text-emerald-900 shadow-2xs">
-                    <span>Nº ${item[0] < 10 && currentCfg.max > 9 ? '0'+item[0] : item[0]}</span>
-                    <span class="text-emerald-600">${item[1]}x apar.</span>
-                </div>`).join('');
+            // 1. Exibir Último Resultado (que está na ÚLTIMA linha de historicalDraws)
+            if (historicalDraws.length > 0) {
+                const latestDraw = historicalDraws[historicalDraws.length - 1];
+                lastDrawNumber.innerText = `Concurso ${latestDraw.concurso || historicalDraws.length}`;
+                lastDrawBalls.innerHTML = latestDraw.numeros.map(n => {
+                    let numStr = n < 10 && currentCfg.max > 9 ? '0' + n : (currentCfg.id === 'lotomania' && n === 0 ? '00' : (n < 10 ? '0' + n : n));
+                    return `<span class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">${numStr}</span>`;
+                }).join('');
+            } else {
+                lastDrawNumber.innerText = `Concurso --`;
+                lastDrawBalls.innerHTML = `<span class="text-slate-400 italic">Nenhum concurso disponível.</span>`;
+            }
 
-            coldDemoList.innerHTML = cold.map(item => `
-                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-lg border border-sky-100 text-xs font-bold text-sky-900 shadow-2xs">
-                    <span>Nº ${item[0] < 10 && currentCfg.max > 9 ? '0'+item[0] : item[0]}</span>
-                    <span class="text-sky-600">${item[1]}x apar.</span>
-                </div>`).join('');
+            // 2. Top Mais Sorteadas
+            let sortedFreq = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
+            let hot = sortedFreq.slice(0, 4);
+            hotDemoList.innerHTML = hot.map(item => {
+                let valNum = parseInt(item[0]);
+                let disp = valNum < 10 && currentCfg.max > 9 ? '0'+valNum : (currentCfg.id === 'lotomania' && valNum === 0 ? '00' : valNum);
+                return `
+                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-xl border border-emerald-100 text-xs font-bold text-emerald-900 shadow-2xs">
+                    <span>Nº ${disp}</span>
+                    <span class="text-emerald-600">${item[1]}x saídas</span>
+                </div>`;
+            }).join('');
+
+            // 3. Mais Atrasadas (maior delay)
+            let sortedDelay = Object.entries(delayMap).sort((a,b) => b[1] - a[1]);
+            let delayed = sortedDelay.slice(0, 4);
+            delayedDemoList.innerHTML = delayed.map(item => {
+                let valNum = parseInt(item[0]);
+                let disp = valNum < 10 && currentCfg.max > 9 ? '0'+valNum : (currentCfg.id === 'lotomania' && valNum === 0 ? '00' : valNum);
+                return `
+                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-xl border border-amber-100 text-xs font-bold text-amber-900 shadow-2xs">
+                    <span>Nº ${disp}</span>
+                    <span class="text-amber-700">${item[1]} conc. atrás</span>
+                </div>`;
+            }).join('');
         }
 
         function passesAdvancedFilters(nums) {
@@ -470,6 +543,7 @@
         function generateGame() {
             const picksCount = parseInt(picksSelect.value);
             const closureCount = parseInt(closureSelect.value);
+            const isMirrorActive = currentCfg.id === 'lotomania' && mirrorBetCheck.checked;
             
             const allBalls = document.querySelectorAll('.number-ball');
             allBalls.forEach(ball => {
@@ -534,7 +608,17 @@
 
                 generatedGames.forEach(gameNums => {
                     let auditResult = auditGameFrequency(gameNums);
-                    saveToHistory(currentCfg.name, currentCfg.id, gameNums, auditResult, drawnTeam, drawnTrevos);
+                    saveToHistory(currentCfg.name, currentCfg.id, gameNums, auditResult, drawnTeam, drawnTrevos, false);
+
+                    if (isMirrorActive) {
+                        let mirrorNums = [];
+                        for (let i = currentCfg.min; i <= currentCfg.max; i++) {
+                            if (!gameNums.includes(i)) mirrorNums.push(i);
+                        }
+                        mirrorNums.sort((a, b) => a - b);
+                        let mirrorAudit = auditGameFrequency(mirrorNums);
+                        saveToHistory("Lotomania (Espelho)", currentCfg.id, mirrorNums, mirrorAudit, drawnTeam, drawnTrevos, true);
+                    }
                 });
 
                 updateCharts();
@@ -568,7 +652,7 @@
             return Object.keys(tierCounts).length > 0 ? { tierCounts, mostRecentHit } : null;
         }
 
-        function saveToHistory(lotteryName, lotteryKey, numbers, audit, team, trevos) {
+        function saveToHistory(lotteryName, lotteryKey, numbers, audit, team, trevos, isMirror) {
             const newItem = {
                 id: Date.now() + Math.random(),
                 lottery: lotteryName,
@@ -577,6 +661,7 @@
                 audit: audit,
                 team: team,
                 trevos: trevos ? [...trevos] : null,
+                isMirror: isMirror,
                 date: new Date().toLocaleDateString('pt-BR') + ' ' + new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
             };
             historyData.unshift(newItem);
@@ -593,7 +678,7 @@
             historyList.innerHTML = '';
             historyData.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200/80 shadow-2xs flex flex-col gap-1.5';
+                div.className = `p-3 rounded-xl border shadow-2xs flex flex-col gap-1.5 ${item.isMirror ? 'bg-orange-50/60 border-orange-200' : 'bg-slate-50 border-slate-200/80'}`;
                 
                 let extraInfoHTML = '';
                 if (item.team) {
@@ -614,16 +699,21 @@
                     `;
                 }
 
+                let formattedNums = item.numbers.map(n => {
+                    let num = parseInt(n);
+                    return num < 10 && item.lotteryKey !== 'lotomania' ? '0' + num : (item.lotteryKey === 'lotomania' && num === 0 ? '00' : (num < 10 ? '0' + num : num));
+                }).join(', ');
+
                 div.innerHTML = `
                     <div class="flex justify-between items-center text-slate-400 text-[10px]">
-                        <span class="font-bold text-slate-800">${item.lottery}</span>
+                        <span class="font-bold ${item.isMirror ? 'text-orange-900' : 'text-slate-800'}">${item.lottery}</span>
                         <div class="flex items-center gap-2">
                             <span>${item.date}</span>
                             <button onclick="printTicket('${item.id}')" class="text-emerald-600 hover:text-emerald-800 font-bold cursor-pointer" title="Imprimir / Salvar PDF">🖨️</button>
                         </div>
                     </div>
                     <div class="font-mono font-bold text-slate-900 text-xs bg-white p-2 rounded-lg border border-slate-100 flex justify-between items-center">
-                        <span>${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(', ')}</span>
+                        <span>${formattedNums}</span>
                         ${item.liveHits !== undefined ? `<span class="bg-emerald-600 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold shadow-xs">${item.liveHits} Acertos</span>` : ''}
                     </div>
                     ${extraInfoHTML}
@@ -637,6 +727,11 @@
             const item = historyData.find(i => String(i.id) === String(id));
             if (!item) return;
             const w = window.open('', '_print', 'width=400,height=600');
+            let formattedNums = item.numbers.map(n => {
+                let num = parseInt(n);
+                return num < 10 && item.lotteryKey !== 'lotomania' ? '0' + num : (item.lotteryKey === 'lotomania' && num === 0 ? '00' : (num < 10 ? '0' + num : num));
+            }).join(' - ');
+
             w.document.write(`
                 <html>
                 <head><title>Volante - ${item.lottery}</title>
@@ -647,7 +742,7 @@
                     <h3>${item.lottery}</h3>
                     <p>Data: ${item.date}</p>
                     <hr/>
-                    <h2 style="letter-spacing: 2px;">${item.numbers.map(n => n < 10 && n >= 0 ? '0'+n : n).join(' - ')}</h2>
+                    <h2 style="letter-spacing: 2px; font-size: 14px;">${formattedNums}</h2>
                     ${item.team ? `<p><strong>Time:</strong> ${item.team}</p>` : ''}
                     ${item.trevos ? `<p><strong>Trevos:</strong> ${item.trevos.join(' - ')}</p>` : ''}
                     <hr/>
@@ -689,7 +784,7 @@
             checkFeedback.classList.remove('hidden');
         };
 
-        // Gráficos alimentados com a frequência real do histórico
+        // Gráficos Analíticos do Dashboard (Frequência Top, Pares/Ímpares, Quadrantes)
         function updateCharts() {
             let sortedEntries = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
             let topLabels = sortedEntries.slice(0, 6).map(item => `N${item[0]}`);
@@ -711,11 +806,29 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 6, font: { size: 8 } } } } }
             });
 
+            // Cálculo real de Quadrantes com base no último concurso ou média geral
+            let q1 = 0, q2 = 0, q3 = 0, q4 = 0;
+            let midMax = currentCfg.max / 2;
+            let midMin = (currentCfg.min + currentCfg.max) / 2;
+
+            if (historicalDraws.length > 0) {
+                const latest = historicalDraws[historicalDraws.length - 1].numeros;
+                latest.forEach(n => {
+                    if (n <= midMin) {
+                        if (n % 2 === 0) q1++; else q2++;
+                    } else {
+                        if (n % 2 === 0) q3++; else q4++;
+                    }
+                });
+            } else {
+                q1 = 25; q2 = 25; q3 = 25; q4 = 25;
+            }
+
             const quadCtx = document.getElementById('quadrantChart').getContext('2d');
             if (quadrantChartInstance) quadrantChartInstance.destroy();
             quadrantChartInstance = new Chart(quadCtx, {
                 type: 'pie',
-                data: { labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ data: [25, 25, 25, 25], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], borderWidth: 0 }] },
+                data: { labels: ['Q1', 'Q2', 'Q3', 'Q4'], datasets: [{ data: [q1||1, q2||1, q3||1, q4||1], backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'], borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 6, font: { size: 8 } } } } }
             });
         }
@@ -730,6 +843,8 @@
             };
         });
 
+        // Leitura da Planilha: Respeitando a ordem onde os valores no topo são os mais antigos
+        // e os mais recentes estão na base (última linha).
         resultFile.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -742,24 +857,34 @@
                         const sheet = workbook.Sheets[workbook.SheetNames[0]];
                         const json = XLSX.utils.sheet_to_json(sheet, {header: 1});
                         
-                        historicalDraws = [];
+                        let tempDraws = [];
                         json.forEach((row, idx) => {
-                            if (idx === 0) return;
+                            if (idx === 0) return; // Pula cabeçalho
                             let nums = [];
+                            let concNum = idx;
                             row.forEach((cell, cIdx) => {
-                                if (cIdx === 0 && (typeof cell === 'number' && cell > 1000 || String(cell).includes('/'))) return;
+                                if (cIdx === 0 && (typeof cell === 'number' || !isNaN(parseInt(cell)))) {
+                                    let maybeConc = parseInt(cell);
+                                    if (maybeConc > 100) concNum = maybeConc;
+                                }
                                 let p = parseInt(cell);
                                 if (!isNaN(p) && p >= currentCfg.min && p <= currentCfg.max) {
                                     if (!nums.includes(p)) nums.push(p);
                                 }
                             });
                             if (nums.length >= Math.min(currentCfg.defaultPicks, 5)) {
-                                historicalDraws.push({ concurso: idx, numeros: nums });
+                                tempDraws.push({ concurso: concNum, numeros: nums.sort((a,b)=>a-b) });
                             }
                         });
 
-                        recalculateFrequencyMap();
-                        dataSourceLabel.innerText = `${historicalDraws.length} concursos carregados`;
+                        if (tempDraws.length > 0) {
+                            // Como a tabela está em ordem crescente (topo = mais antigo, base = mais recente),
+                            // mantemos exatamente a ordem em que aparecem no arquivo.
+                            historicalDraws = tempDraws;
+                        }
+
+                        processAnalytics();
+                        dataSourceLabel.innerText = `${historicalDraws.length} concursos carregados da planilha`;
                         statusMessage.innerText = "Planilha processada com sucesso!";
                         statusMessage.className = "mt-2 text-[11px] font-bold text-emerald-600";
                         
@@ -768,7 +893,7 @@
                         });
                         localStorage.setItem('volante_history', JSON.stringify(historyData));
                         renderHistory();
-                        renderDemoLists();
+                        renderDashboard();
                         updateCharts();
                     } catch (err) {
                         statusMessage.innerText = "Erro ao processar planilha.";
