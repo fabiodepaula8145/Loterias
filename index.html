@@ -267,7 +267,7 @@
                 </div>
             </div>
 
-            <!-- Conferidor Automático -->
+            <!-- Conferidor Automático com Dashboard Exclusivo integrado -->
             <div class="bg-emerald-900 text-white rounded-2xl shadow-sm p-5 flex flex-col gap-3">
                 <div class="flex justify-between items-center">
                     <h3 class="font-extrabold text-xs uppercase tracking-wider flex items-center gap-1.5 text-emerald-300">
@@ -281,6 +281,18 @@
                     <button id="checkResultBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold px-4 py-2 rounded-xl text-xs transition cursor-pointer">Conferir</button>
                 </div>
                 <div id="checkFeedback" class="text-[11px] font-medium text-emerald-300 hidden"></div>
+
+                <!-- DASHBOARD EXCLUSIVO DENTRO DO CONFERIDOR (Degradê Laranja com Preto) -->
+                <div id="exclusiveCheckerDashboard" class="bg-gradient-to-br from-amber-600 via-orange-600 to-black text-white rounded-xl shadow-inner p-3.5 flex flex-col gap-2.5 border border-orange-500/50 mt-2 hidden">
+                    <div class="flex justify-between items-center border-b border-orange-400/30 pb-1.5">
+                        <h4 class="font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1 text-amber-200">
+                            🔥 Top Jogos Pontuados
+                        </h4>
+                        <span class="bg-black/60 text-amber-300 text-[9px] px-2 py-0.5 rounded-full font-mono font-bold border border-orange-500/50">Até 20 Jogos</span>
+                    </div>
+                    <p class="text-[10px] text-orange-100/90 leading-tight">Jogos da tabela com acertos neste sorteio (dezenas acertadas destacadas):</p>
+                    <div id="exclusiveCheckerList" class="flex flex-col gap-2 max-h-56 overflow-y-auto pr-1"></div>
+                </div>
             </div>
 
             <!-- Importação de Planilha -->
@@ -383,6 +395,10 @@
         const checkResultBtn = document.getElementById('checkResultBtn');
         const checkFeedback = document.getElementById('checkFeedback');
         const gameLegend = document.getElementById('gameLegend');
+
+        // Elementos do Dashboard Exclusivo Laranja/Preto dentro do Conferidor
+        const exclusiveCheckerDashboard = document.getElementById('exclusiveCheckerDashboard');
+        const exclusiveCheckerList = document.getElementById('exclusiveCheckerList');
 
         // Inputs de Filtro do Jogo Aleatório
         const randParityFilter = document.getElementById('randParityFilter');
@@ -489,7 +505,6 @@
             const mainDiv = document.createElement('div');
             mainDiv.className = `grid gap-2 justify-center ${currentCfg.id === 'lotofacil' ? 'grid-cols-5 max-w-xs' : currentCfg.id === 'lotomania' ? 'grid-cols-10 max-w-2xl' : 'grid-cols-6 sm:grid-cols-10 max-w-xl'}`;
 
-            // Identificar Top 10 mais sorteadas, Top 10 menos sorteadas e atrasadas se houver coloredDezenas
             let hot10Set = new Set();
             let cold10Set = new Set();
             let delayedSet = new Set();
@@ -571,7 +586,6 @@
         function renderDashboard() {
             demoSubInfo.innerText = `${historicalDraws.length} concursos analisados (Ordem: mais antigo no topo, mais recente na base)`;
 
-            // 1. Último Resultado
             if (historicalDraws.length > 0) {
                 const latestDraw = historicalDraws[historicalDraws.length - 1];
                 lastDrawNumber.innerText = `Concurso ${latestDraw.concurso || historicalDraws.length}`;
@@ -584,7 +598,6 @@
                 lastDrawBalls.innerHTML = `<span class="text-slate-400 italic">Nenhum concurso disponível.</span>`;
             }
 
-            // 2. Top 10 Mais Sorteadas
             let sortedFreq = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
             let top10Hot = sortedFreq.slice(0, 10);
             top10HotList.innerHTML = top10Hot.map((item, index) => {
@@ -597,7 +610,6 @@
                 </div>`;
             }).join('');
 
-            // 3. Top 10 Menos Sorteadas
             let top10Cold = sortedFreq.slice(-10).reverse();
             top10ColdList.innerHTML = top10Cold.map((item, index) => {
                 let valNum = parseInt(item[0]);
@@ -609,7 +621,6 @@
                 </div>`;
             }).join('');
 
-            // 4. Mais Atrasadas
             let sortedDelay = Object.entries(delayMap).sort((a,b) => b[1] - a[1]);
             let delayed = sortedDelay.slice(0, 10);
             delayedDemoList.innerHTML = delayed.map((item, index) => {
@@ -645,7 +656,6 @@
             return true;
         }
 
-        // Função de Geração de Jogo Padrão
         function generateGame() {
             const picksCount = parseInt(picksSelect.value);
             const closureCount = parseInt(closureSelect.value);
@@ -721,7 +731,6 @@
             }, 450);
         }
 
-        // Nova Função: Botão de Fazer Jogo Aleatório (Com filtros de paridade, mais/menos sorteadas, atrasadas e soma)
         function generateRandomGame() {
             const picksCount = parseInt(picksSelect.value);
             const parityMode = randParityFilter.value;
@@ -739,7 +748,6 @@
                 let attempts = 0;
                 let valid = false;
 
-                // Montar pool ponderado de acordo com hotColdMode
                 let sortedFreq = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
                 let hotPool = sortedFreq.slice(0, 25).map(item => parseInt(item[0]));
                 let coldPool = sortedFreq.slice(-25).map(item => parseInt(item[0]));
@@ -774,7 +782,6 @@
 
                     if (temp.length < picksCount) continue;
 
-                    // Validar Paridade
                     let evens = temp.filter(n => n % 2 === 0).length;
                     let odds = picksCount - evens;
 
@@ -782,12 +789,10 @@
                     if (parityMode === 'moreEven' && evens <= odds) continue;
                     if (parityMode === 'moreOdd' && odds <= evens) continue;
 
-                    // Validar Soma
                     let sum = temp.reduce((acc, curr) => acc + curr, 0);
                     if (randSumMin.value && sum < sumMin) continue;
                     if (randSumMax.value && sum > sumMax) continue;
 
-                    // Validar filtros inteligentes gerais se ativos
                     if (!passesAdvancedFilters(temp)) continue;
 
                     selected = temp;
@@ -796,7 +801,6 @@
                 }
 
                 if (!valid) {
-                    // Fallback se os filtros forem restritivos demais
                     let fallbackPool = [];
                     for (let i = currentCfg.min; i <= currentCfg.max; i++) fallbackPool.push(i);
                     fallbackPool.sort(() => Math.random() - 0.5);
@@ -959,31 +963,83 @@
         checkResultBtn.onclick = () => {
             const raw = checkResultInput.value.trim();
             if (!raw) {
-                checkFeedback.innerText = "Digite os números sorteados.";
+                checkFeedback.innerText = "Digite os números para conferir.";
                 checkFeedback.classList.remove('hidden');
+                exclusiveCheckerDashboard.classList.add('hidden');
                 return;
             }
             const drawn = raw.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
             if (drawn.length === 0) {
                 checkFeedback.innerText = "Formato inválido. Use números separados por vírgula.";
                 checkFeedback.classList.remove('hidden');
+                exclusiveCheckerDashboard.classList.add('hidden');
                 return;
             }
 
-            let matchesCount = 0;
-            historyData.forEach(item => {
+            // Cruzar os números digitados contra a Tabela Completa de Histórico (historicalDraws)
+            let scoredDraws = [];
+
+            historicalDraws.forEach(draw => {
                 let hits = 0;
-                item.numbers.forEach(n => {
-                    if (drawn.includes(n)) hits++;
+                let matchedNumsList = [];
+                // Verificar quais números do sorteio digitado estavam presentes no concurso da tabela
+                drawn.forEach(n => {
+                    if (draw.numeros.includes(n)) {
+                        hits++;
+                        matchedNumsList.push(n);
+                    }
                 });
-                item.liveHits = hits;
-                if (hits > 0) matchesCount++;
+                if (hits > 0) {
+                    scoredDraws.push({ concurso: draw.concurso, numerosOficiais: draw.numeros, hits, matchedNumsList });
+                }
             });
 
-            renderHistory();
-            checkFeedback.innerText = `Conferência realizada! ${matchesCount} bilhete(s) pontuaram com os números informados.`;
+            // Ordenar do que teve mais acertos para o que teve menos, e pegar os 5 mais relevantes
+            scoredDraws.sort((a, b) => b.hits - a.hits);
+            let top5Draws = scoredDraws.slice(0, 20);
+
+            checkFeedback.innerText = `Análise concluída na tabela completa! ${scoredDraws.length} concurso(s) histórico(s) apresentaram correspondências.`;
             checkFeedback.classList.remove('hidden');
+
+            renderTableCheckerDashboard(top5Draws, drawn);
         };
+
+        function renderTableCheckerDashboard(topDraws, drawn) {
+            exclusiveCheckerDashboard.classList.remove('hidden');
+            if (topDraws.length === 0) {
+                exclusiveCheckerList.innerHTML = `<div class="text-[11px] text-amber-200/80 text-center py-3 italic">Nenhum concurso na tabela apresentou correspondências com os números informados.</div>`;
+                return;
+            }
+
+            exclusiveCheckerList.innerHTML = topDraws.map((item, index) => {
+                // Mostrar os números oficiais daquele concurso da tabela, destacando em amarelo os que bateram com os números digitados
+                let formattedNumsHTML = item.numerosOficiais.map(n => {
+                    let num = parseInt(n);
+                    let isHit = drawn.includes(num);
+                    let numStr = num < 10 && currentCfg.max > 9 ? '0' + num : (currentCfg.id === 'lotomania' && num === 0 ? '00' : (num < 10 ? '0' + num : num));
+                    
+                    if (isHit) {
+                        return `<span class="w-6 h-6 rounded-full bg-amber-400 text-black font-extrabold flex items-center justify-center text-[10px] shadow-sm ring-2 ring-white/90" title="Número correspondente">${numStr}</span>`;
+                    } else {
+                        return `<span class="w-6 h-6 rounded-full bg-black/55 text-orange-200/90 font-medium flex items-center justify-center text-[10px] opacity-75">${numStr}</span>`;
+                    }
+                }).join('');
+
+                return `
+                <div class="bg-black/50 border border-orange-500/40 rounded-xl p-2.5 flex flex-col gap-1.5 shadow-xs">
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="font-extrabold text-amber-300">Concurso Oficial ${item.concurso}</span>
+                        <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-black font-extrabold px-2 py-0.5 rounded-full text-[10px] shadow-xs">${item.hits} Acertos na Tabela</span>
+                    </div>
+                    <div class="text-[10px] text-orange-200/80">Sorteio oficial:</div>
+                    <div class="flex flex-wrap gap-1 items-center py-0.5">
+                        ${formattedNumsHTML}
+                    </div>
+                </div>`;
+            }).join('');
+
+            exclusiveCheckerDashboard.classList.remove('hidden');
+        }
 
         function updateCharts() {
             let sortedEntries = Object.entries(globalFrequencyMap).sort((a,b) => b[1] - a[1]);
@@ -1101,7 +1157,7 @@
         generateBtn.onclick = generateGame;
         randomGameBtn.onclick = generateRandomGame;
         clearBtn.onclick = () => { pinnedNumbers = []; initCartela(); };
-        clearHistoryBtn.onclick = () => { historyData = []; localStorage.removeItem('volante_history'); renderHistory(); };
+        clearHistoryBtn.onclick = () => { historyData = []; localStorage.removeItem('volante_history'); renderHistory(); exclusiveCheckerDashboard.classList.add('hidden'); };
 
         renderTabs();
         initCartela();
